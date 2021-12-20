@@ -29,8 +29,10 @@ android {
     compileSdkVersion 30
 
     compileOptions {
-        sourceCompatibility kotlin_version
-        targetCompatibility kotlin_version
+//        sourceCompatibility kotlin_version
+//        targetCompatibility kotlin_version
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
