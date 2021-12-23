@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myref/models/request_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -98,10 +99,17 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'You have pushed the button this many times:',
             ),
-            Text(
+              Text(
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            const SizedBox(
+              height: 10.0,
+            ),
+            Text(
+              RequestModel(id: "test",header: "header",body: "body").toMap().toString(),
+              style: Theme.of(context).textTheme.headline5,
+            )
           ],
         ),
       ),
