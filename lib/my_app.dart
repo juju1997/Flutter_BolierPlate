@@ -1,7 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:myref/services/firestore_database.dart';
 
 class MyApp2 extends StatelessWidget {
-  const MyApp2({Key? key}) : super(key: key);
+  const MyApp2({required Key key, required this.databaseBuilder})
+      : super(key: key);
+
+  final FirestoreDatabase Function(BuildContext context, String uid)
+      databaseBuilder;
 
   @override
   Widget build(BuildContext context) {

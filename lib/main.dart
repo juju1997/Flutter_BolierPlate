@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:myref/providers/theme_provider.dart';
 import 'package:myref/providers/lang_provider.dart';
+import 'package:myref/services/firestore_database.dart';
 
 import 'package:myref/my_app.dart';
 import 'package:myref/models/request_model.dart';
@@ -25,8 +27,9 @@ void main() {
               create: (context) => LanguageProvider()
           )
         ],
-        child: const MyApp2(
-          key: Key('test'),
+        child: MyApp2(
+          databaseBuilder: (_, uid) => FirestoreDatabase(uid: uid),
+          key: const Key('test'),
         ),
       )
     );
