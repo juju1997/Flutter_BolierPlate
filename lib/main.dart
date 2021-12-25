@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:myref/providers/theme_provider.dart';
+import 'package:myref/providers/lang_provider.dart';
+
+import 'package:myref/my_app.dart';
 import 'package:myref/models/request_model.dart';
 
 void main() {
@@ -9,7 +14,23 @@ void main() {
   SystemChrome.setPreferredOrientations( [DeviceOrientation.portraitUp] )
     .then((_) async{
 
-    runApp(const MyApp());
+    // runApp(const MyApp());
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeProvider>(
+              create: (context) => ThemeProvider()
+          ),
+          ChangeNotifierProvider(
+              create: (context) => LanguageProvider()
+          )
+        ],
+        child: const MyApp2(
+          key: Key('test'),
+        ),
+      )
+    );
+
   });
 
 

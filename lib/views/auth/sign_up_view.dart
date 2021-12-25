@@ -11,9 +11,12 @@ class _SignUpViewState extends State<SignUpView> {
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("SignUpView"),
+    return MaterialApp(
+      title: "SignUpView TEST",
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("SignUpView"),
+        ),
       ),
     );
   }

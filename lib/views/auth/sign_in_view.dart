@@ -10,10 +10,13 @@ class SignInView extends StatefulWidget {
 class _SignInViewState extends State<SignInView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("SignInView"),
-      )
+    return MaterialApp(
+      title: "SignInView TEST",
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("SignInView"),
+        )
+      ),
     );
   }
   

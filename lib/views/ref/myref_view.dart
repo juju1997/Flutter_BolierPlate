@@ -10,9 +10,12 @@ class MyRefView extends StatefulWidget {
 class _MyRefViewState extends State<MyRefView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("MyRefView"),
+    return MaterialApp(
+      title: "MyRefVIew TEST",
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("MyRefView"),
+        ),
       ),
     );
   }

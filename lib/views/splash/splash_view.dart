@@ -10,9 +10,12 @@ class SplashView extends StatefulWidget {
 class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("SpalshView"),
+    return MaterialApp(
+      title: "SplashView TEST",
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("SpalshView"),
+        ),
       ),
     );
   }

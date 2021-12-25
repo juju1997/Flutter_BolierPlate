@@ -10,9 +10,12 @@ class SettingView extends StatefulWidget {
 class _SettingViewState extends State<SettingView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("SettingView"),
+    return MaterialApp(
+      title: "SettingView TEST",
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("SettingView"),
+        ),
       ),
     );
   }
