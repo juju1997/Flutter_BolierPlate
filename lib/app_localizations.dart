@@ -16,12 +16,12 @@ class AppLocalizations {
   static const LocalizationsDelegate<AppLocalizations> delegate =
   _AppLocalizationsDelegate();
 
-  Map<String, String> _localizedStrings = Map();
+  Map<String, String> _localizedStrings = {};
 
   Future<bool> load() async {
     // Load the language JSON file from the "lang" folder
     String jsonString =
-    await rootBundle.loadString('lang/${locale.languageCode}.json');
+    await rootBundle.loadString('assets/lang/${locale.languageCode}.json');
     Map<String, dynamic> jsonMap = json.decode(jsonString);
 
     _localizedStrings = jsonMap.map((key, value) {

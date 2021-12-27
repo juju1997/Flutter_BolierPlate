@@ -14,7 +14,7 @@ void main() {
 
   // 화면 회전 방지
   SystemChrome.setPreferredOrientations( [DeviceOrientation.portraitUp] )
-    .then((_) async{
+    .then((_) async {
 
     // runApp(const MyApp());
     runApp(
@@ -23,7 +23,7 @@ void main() {
           ChangeNotifierProvider<ThemeProvider>(
               create: (context) => ThemeProvider()
           ),
-          ChangeNotifierProvider(
+          ChangeNotifierProvider<LanguageProvider>(
               create: (context) => LanguageProvider()
           )
         ],
