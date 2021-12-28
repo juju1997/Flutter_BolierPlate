@@ -24,17 +24,21 @@ class _SignInViewState extends State<SignInView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset : false,
-      key: _scaffoldKey,
-      body: Stack(
-        children: <Widget>[
-          _buildBackground(),
-          Align(
-            alignment: Alignment.center,
-            child: _buildForm(context),
-          ),
-        ],
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        body: Stack(
+          children: <Widget>[
+            _buildBackground(),
+            Align(
+              alignment: Alignment.center,
+              child: _buildForm(context),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -97,6 +101,17 @@ class _SignInViewState extends State<SignInView> {
                     border: const OutlineInputBorder()),
               ),
             ),
+
+            // TODO Auth 적용
+           ElevatedButton(
+                onPressed: (){
+                  print(_emailController.text);
+                  print(_passwordController.text);
+                },
+                child: const Text("로그인")
+            ),
+
+
           ],
         ),
       ),
