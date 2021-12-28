@@ -34,6 +34,8 @@ class MyApp2 extends StatelessWidget {
             GlobalMaterialLocalizations.delegate,
             //Built-in localization for text direction LTR/RTL
             GlobalWidgetsLocalizations.delegate,
+            // IOS ISSUE
+            GlobalCupertinoLocalizations.delegate,
           ],
           //return a locale which will be used by the app
           localeResolutionCallback: (locale, supportedLocales) {
