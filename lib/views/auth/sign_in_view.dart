@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myref/app_localizations.dart';
+import 'package:myref/routes.dart';
 
 class SignInView extends StatefulWidget {
   const SignInView({Key? key}) : super(key: key);
@@ -53,6 +54,7 @@ class _SignInViewState extends State<SignInView> {
   Widget _buildForm(BuildContext context){
 
     return Form(
+      key: _formKey,
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.max,
@@ -102,14 +104,40 @@ class _SignInViewState extends State<SignInView> {
               ),
             ),
 
-            // TODO Auth 적용
            ElevatedButton(
                 onPressed: (){
                   print(_emailController.text);
                   print(_passwordController.text);
+                  // 여기서 ID 와 PW를 체크하고 toast or pushReplacementNamed
+                  // 유효성 검사 시, 하나만 출력되게
+                  if(_formKey.currentState!.validate()){
+                    FocusScope.of(context).unfocus();
+                    
+                    bool status = false;
+                    
+                    if(!status){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        // TODO 스낵바 꾸미기
+                        SnackBar(content: const Text('로그인실패'))
+                      );
+                    }else{
+
+                    }
+                    
+                  }
                 },
-                child: const Text("로그인")
+                child: Text(AppLocalizations.of(context).translate("signIn"))
             ),
+            const SizedBox(
+              height: 5.0,
+            ),
+            ElevatedButton(
+                onPressed: (){
+                  Navigator.of(context)
+                      .pushNamed(Routes.signUp);
+                },
+                child: Text(AppLocalizations.of(context).translate("easySignUp"))
+            )
 
 
           ],
