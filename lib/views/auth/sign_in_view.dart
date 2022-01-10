@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myref/app_localizations.dart';
 import 'package:myref/routes.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 class SignInView extends StatefulWidget {
   const SignInView({Key? key}) : super(key: key);
@@ -108,6 +110,10 @@ class _SignInViewState extends State<SignInView> {
                 onPressed: (){
                   print(_emailController.text);
                   print(_passwordController.text);
+
+                  List<int> bytes = utf8.encode(_passwordController.text);
+                  var digest = sha256.convert(bytes);
+                  print('sha256 is : $digest');
                   // 여기서 ID 와 PW를 체크하고 toast or pushReplacementNamed
                   // 유효성 검사 시, 하나만 출력되게
                   if(_formKey.currentState!.validate()){
