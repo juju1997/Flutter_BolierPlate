@@ -5,5 +5,5 @@
   "loginTextErrorEmail": "Please enter your E-mail",
   "loginTextErrorPassword": "Please enter your Password",
   "signIn": "Sign In",
-  "easySignUp": "Easy SignUp"
+  "signUp": "SignUp"
 }

@@ -142,7 +142,7 @@ class _SignInViewState extends State<SignInView> {
                   Navigator.of(context)
                       .pushNamed(Routes.signUp);
                 },
-                child: Text(AppLocalizations.of(context).translate("easySignUp"))
+                child: Text(AppLocalizations.of(context).translate("signUp"))
             )
 
 

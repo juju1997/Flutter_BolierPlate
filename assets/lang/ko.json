@@ -5,5 +5,5 @@
   "loginTextErrorEmail": "이메일을 입력주세요",
   "loginTextErrorPassword": "비밀번호를 입력해주세요",
   "signIn": "로그인",
-  "easySignUp": "간편 회원가입"
+  "signUp": "회원가입"
 }
