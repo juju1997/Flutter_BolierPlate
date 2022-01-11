@@ -5,13 +5,14 @@ import 'package:provider/provider.dart';
 import 'package:myref/providers/theme_provider.dart';
 import 'package:myref/providers/lang_provider.dart';
 import 'package:myref/services/firestore_database.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:myref/my_app.dart';
 import 'package:myref/models/request_model.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await Firebase.initializeApp();
   // 화면 회전 방지
   SystemChrome.setPreferredOrientations( [DeviceOrientation.portraitUp] )
     .then((_) async {

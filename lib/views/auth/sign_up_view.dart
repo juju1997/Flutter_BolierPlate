@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:myref/models/request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -97,7 +100,7 @@ class _SignUpViewState extends State<SignUpView> {
               ),
               const SizedBox(height: 20.0,),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   print(_idController.text);
                   print(_passwordController.text);
                   print(_emailController.text);
@@ -105,6 +108,9 @@ class _SignUpViewState extends State<SignUpView> {
                   List<int> bytes = utf8.encode(_passwordController.text);
                   var digest = sha256.convert(bytes);
                   print('sha256 password is : $digest');
+
+                  Test t = Test(body: "test1", header: "test1");
+                  testRef.add(t);
 
                   // TODO firebase 연동
                 },
@@ -117,4 +123,39 @@ class _SignUpViewState extends State<SignUpView> {
     );
   }
 }
-    
+
+
+
+final testRef = FirebaseFirestore.instance
+    .collection('test')
+    .withConverter(
+    fromFirestore: (snapshots, _) => Test.fromJson(snapshots.data()!),
+    toFirestore: (test, _) => test.toJson()
+);
+
+class Test{
+  Test({
+    required this.header,
+    required this.body
+  });
+
+  Test.fromJson(Map<String, dynamic> json)
+      : this(
+      header: json['header']! as String,
+      body: json['body']! as String
+  );
+  final String header;
+  final String body;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'header': header,
+      'body': body
+    };
+  }
+
+  @override
+  String toString() {
+    return header;
+  }
+}
