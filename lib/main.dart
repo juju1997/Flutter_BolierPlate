@@ -10,8 +10,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:myref/my_app.dart';
 import 'package:myref/models/request_model.dart';
 
-void main() async {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp();
   // 화면 회전 방지
   SystemChrome.setPreferredOrientations( [DeviceOrientation.portraitUp] )

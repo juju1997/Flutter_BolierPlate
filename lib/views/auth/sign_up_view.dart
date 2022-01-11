@@ -101,6 +101,8 @@ class _SignUpViewState extends State<SignUpView> {
               const SizedBox(height: 20.0,),
               ElevatedButton(
                 onPressed: () async {
+
+
                   print(_idController.text);
                   print(_passwordController.text);
                   print(_emailController.text);
@@ -109,8 +111,11 @@ class _SignUpViewState extends State<SignUpView> {
                   var digest = sha256.convert(bytes);
                   print('sha256 password is : $digest');
 
-                  Test t = Test(body: "test1", header: "test1");
-                  testRef.add(t);
+                  // Test t = Test(body: "test1", header: "test1");
+                  // testRef.add(t);
+                  var r = await testRef.doc('testDoc').get();
+                  Test rt = r.data() as Test;
+                  print(rt.toJson());
 
                   // TODO firebase 연동
                 },
