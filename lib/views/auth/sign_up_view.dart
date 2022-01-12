@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:myref/models/request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
+import 'package:myref/models/user_model.dart';
 import 'dart:convert';
 
 class SignUpView extends StatefulWidget {
@@ -108,14 +109,50 @@ class _SignUpViewState extends State<SignUpView> {
                   print(_emailController.text);
 
                   List<int> bytes = utf8.encode(_passwordController.text);
-                  var digest = sha256.convert(bytes);
-                  print('sha256 password is : $digest');
+                  Digest digest = sha256.convert(bytes);
+                  String pwd = digest.toString();
 
-                  // Test t = Test(body: "test1", header: "test1");
-                  // testRef.add(t);
-                  var r = await testRef.doc('testDoc').get();
-                  Test rt = r.data() as Test;
-                  print(rt.toJson());
+
+                  // var r = await testRef.doc('testDoc').get();
+                  // Test rt = r.data() as Test;
+                  // print(rt.toJson());
+
+                  /**
+                   * 실험중
+                   * */
+
+                  UserModel user = UserModel(
+                    id: _idController.text,
+                    pwd: pwd,
+                    email: _emailController.text
+                  );
+
+                  /// --회원가입
+                  /*FirebaseFirestore.instance.collection('users').doc(user.id).set({
+                    "id": user.id,
+                    "pwd": user.pwd,
+                    "email": user.email
+                  });*/
+
+                  /// --회원가입 ID 중복 검사 !!진행중!!
+                  final userSnapshot = await FirebaseFirestore.instance
+                      .collection('users')
+                      .withConverter(
+                          fromFirestore: (snapshots, _) => UserModel.fromJson(snapshots.data()!),
+                          toFirestore: (users, _) => (users as UserModel).toJson())
+                      .doc(user.id).get();
+                  String um = userSnapshot.data()!.id;  // null check
+                  if(um.isEmpty){
+                    print('가입가능');
+                  }else{
+                    print('불가능');
+                  }
+
+
+
+                  /*FirebaseFirestore.instance.collection("users").doc(_idController.text).collection("myRef").doc("test").set({
+                    "ref":"test"
+                  });*/
 
                   // TODO firebase 연동
                 },
@@ -129,38 +166,3 @@ class _SignUpViewState extends State<SignUpView> {
   }
 }
 
-
-
-final testRef = FirebaseFirestore.instance
-    .collection('test')
-    .withConverter(
-    fromFirestore: (snapshots, _) => Test.fromJson(snapshots.data()!),
-    toFirestore: (test, _) => test.toJson()
-);
-
-class Test{
-  Test({
-    required this.header,
-    required this.body
-  });
-
-  Test.fromJson(Map<String, dynamic> json)
-      : this(
-      header: json['header']! as String,
-      body: json['body']! as String
-  );
-  final String header;
-  final String body;
-
-  Map<String, dynamic> toJson() {
-    return {
-      'header': header,
-      'body': body
-    };
-  }
-
-  @override
-  String toString() {
-    return header;
-  }
-}
