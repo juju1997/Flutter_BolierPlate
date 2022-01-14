@@ -141,12 +141,9 @@ class _SignUpViewState extends State<SignUpView> {
                           fromFirestore: (snapshots, _) => UserModel.fromJson(snapshots.data()!),
                           toFirestore: (users, _) => (users as UserModel).toJson())
                       .doc(user.id).get();
-                  String um = userSnapshot.data()!.id;  // null check
-                  if(um.isEmpty){
-                    print('가입가능');
-                  }else{
-                    print('불가능');
-                  }
+                  print(userSnapshot);
+                  bool isAuth = false;
+
 
 
 
@@ -154,7 +151,6 @@ class _SignUpViewState extends State<SignUpView> {
                     "ref":"test"
                   });*/
 
-                  // TODO firebase 연동
                 },
                 child: const Text('회원가입'),
               )
