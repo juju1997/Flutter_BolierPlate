@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'package:myref/models/user_model.dart';
 import 'package:myref/providers/auth_provider.dart';
+import 'package:myref/routes.dart';
 import 'dart:convert';
 
 import 'package:provider/provider.dart';
@@ -126,10 +127,7 @@ class _SignUpViewState extends State<SignUpView> {
 
                   },
                   child: const Text("회원가입")
-              ),
-
-
-
+              )
             ],
           ),
         ),
