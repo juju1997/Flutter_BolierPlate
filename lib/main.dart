@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:myref/providers/theme_provider.dart';
 import 'package:myref/providers/lang_provider.dart';
+import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/services/firestore_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -27,11 +28,14 @@ void main() async{
           ),
           ChangeNotifierProvider<LanguageProvider>(
               create: (context) => LanguageProvider()
+          ),
+          ChangeNotifierProvider<AuthProvider>(
+              create: (context) => AuthProvider()
           )
         ],
         child: MyApp2(
           databaseBuilder: (_, uid) => FirestoreDatabase(uid: uid),
-          key: const Key('test'),
+          key: const Key('myRef'),
         ),
       )
     );

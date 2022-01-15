@@ -4,7 +4,10 @@ import 'package:myref/models/request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'package:myref/models/user_model.dart';
+import 'package:myref/providers/auth_provider.dart';
 import 'dart:convert';
+
+import 'package:provider/provider.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({Key? key}) : super(key: key);
@@ -16,8 +19,8 @@ class SignUpView extends StatefulWidget {
 class _SignUpViewState extends State<SignUpView> {
 
   late TextEditingController _emailController;
-  late TextEditingController _idController;
   late TextEditingController _passwordController;
+  late TextEditingController _passwordCheckController;
 
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -26,8 +29,8 @@ class _SignUpViewState extends State<SignUpView> {
   void initState() {
     super.initState();
     _emailController = TextEditingController(text: "");
-    _idController = TextEditingController(text: "");
     _passwordController = TextEditingController(text: "");
+    _passwordCheckController = TextEditingController(text: "");
   }
   
   @override
@@ -60,12 +63,14 @@ class _SignUpViewState extends State<SignUpView> {
   @override
   void dispose() {
     _emailController.dispose();
-    _idController.dispose();
     _passwordController.dispose();
+    _passwordCheckController.dispose();
     super.dispose();
   }
 
   Widget _buildForm(BuildContext context) {
+
+    final authProvider = Provider.of<AuthProvider>(context);
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -77,9 +82,9 @@ class _SignUpViewState extends State<SignUpView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextFormField(
-                controller: _idController,
+                controller: _emailController,
                 decoration: const InputDecoration(
-                  labelText: "아이디",
+                  labelText: "이메일",
                   border: OutlineInputBorder()
                 ),
               ),
@@ -93,67 +98,38 @@ class _SignUpViewState extends State<SignUpView> {
               ),
               const SizedBox(height: 20.0,),
               TextFormField(
-                controller: _emailController,
+                controller: _passwordCheckController,
                 decoration: const InputDecoration(
-                    labelText: "이메일",
+                    labelText: "비밀번호 확인",
                     border: OutlineInputBorder()
                 ),
               ),
               const SizedBox(height: 20.0,),
-              ElevatedButton(
-                onPressed: () async {
-
-
-                  print(_idController.text);
-                  print(_passwordController.text);
-                  print(_emailController.text);
-
-                  List<int> bytes = utf8.encode(_passwordController.text);
-                  Digest digest = sha256.convert(bytes);
-                  String pwd = digest.toString();
-
-
-                  // var r = await testRef.doc('testDoc').get();
-                  // Test rt = r.data() as Test;
-                  // print(rt.toJson());
-
-                  /**
-                   * 실험중
-                   * */
-
-                  UserModel user = UserModel(
-                    id: _idController.text,
-                    pwd: pwd,
-                    email: _emailController.text
-                  );
-
-                  /// --회원가입
-                  /*FirebaseFirestore.instance.collection('users').doc(user.id).set({
-                    "id": user.id,
-                    "pwd": user.pwd,
-                    "email": user.email
-                  });*/
-
-                  /// --회원가입 ID 중복 검사 !!진행중!!
-                  final userSnapshot = await FirebaseFirestore.instance
-                      .collection('users')
-                      .withConverter(
-                          fromFirestore: (snapshots, _) => UserModel.fromJson(snapshots.data()!),
-                          toFirestore: (users, _) => (users as UserModel).toJson())
-                      .doc(user.id).get();
-                  print(userSnapshot);
-                  bool isAuth = false;
-
-
-
-
-                  /*FirebaseFirestore.instance.collection("users").doc(_idController.text).collection("myRef").doc("test").set({
-                    "ref":"test"
-                  });*/
-
-                },
-                child: const Text('회원가입'),
+              authProvider.status == Status.registering
+                  ? const Center(
+                  child: CircularProgressIndicator()
               )
+                  : ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      FocusScope.of(context).unfocus();
+
+                      UserModel userModel =
+                            await authProvider.registerWithEmailAndPassword(
+                          _emailController.text,
+                          _passwordCheckController.text);
+                      if(userModel == null) {
+                        print('회원가입 실패');
+                      }
+                      print(userModel.toJson());
+                    }
+
+                  },
+                  child: const Text("회원가입")
+              ),
+
+
+
             ],
           ),
         ),
