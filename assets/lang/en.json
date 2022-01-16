@@ -1,9 +1,10 @@
 {
+  "__sign_up_view__": "__로그인__",
   "splashText": "Hello",
   "loginTextEmail": "E-mail",
   "loginTextPassword": "Password",
   "loginTextErrorEmail": "Please enter your E-mail",
   "loginTextErrorPassword": "Please enter your Password",
   "signIn": "Sign In",
-  "signUp": "SignUp"
+  "signUp": "Sign Up"
 }

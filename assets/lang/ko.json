@@ -1,9 +1,23 @@
 {
+  "___common___": "___공통___",
+
+  "___splash_view___": "___스플래쉬___",
   "splashText": "안녕하세요",
-  "loginTextEmail": "이메일",
-  "loginTextPassword": "비밀번호",
-  "loginTextErrorEmail": "이메일을 입력주세요",
-  "loginTextErrorPassword": "비밀번호를 입력해주세요",
+
+  "___sign_in_view___": "___로그인___",
+  "signInTextEmail": "이메일",
+  "signInTextPassword": "비밀번호",
+  "signInTextErrorEmail": "이메일을 입력주세요",
+  "signInTextRegExpErrorEmail": "이메일 형식에 맞게 입력해주세요",
+  "signInTextErrorPassword": "비밀번호를 입력해주세요",
   "signIn": "로그인",
-  "signUp": "회원가입"
+  "signUp": "회원가입",
+
+  "___sign_up_view___": "___회원가입___",
+  "signUpTextEmail": "이메일",
+  "signUpTextPassword": "비밀번호",
+  "signUpTextPasswordCheck": "비밀번호 확인",
+  "signUpComplete": "생성"
+
+
 }

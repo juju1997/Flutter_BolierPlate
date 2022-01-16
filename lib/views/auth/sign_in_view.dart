@@ -3,6 +3,7 @@ import 'package:myref/app_localizations.dart';
 import 'package:myref/routes.dart';
 import 'package:crypto/crypto.dart';
 import 'package:myref/providers/auth_provider.dart';
+import 'package:myref/utils/reg_exp_util.dart';
 import 'dart:convert';
 
 import 'package:provider/provider.dart';
@@ -21,11 +22,26 @@ class _SignInViewState extends State<SignInView> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  bool _hasEmailError = false;
+  late FocusNode emailFocusNode;
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController(text: "");
     _passwordController = TextEditingController(text: "");
+
+    emailFocusNode = FocusNode();
+    emailFocusNode.addListener(() {
+      if( !emailFocusNode.hasFocus ){
+        setState(() {
+          _hasEmailError = RegExpUtil.isNotEmail(_emailController.text) && _emailController.text.isNotEmpty;
+        });
+      }else{
+        setState(() {
+          _hasEmailError = false;
+        });
+      }
+    });
   }
 
   @override
@@ -52,6 +68,7 @@ class _SignInViewState extends State<SignInView> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    emailFocusNode.dispose();
     super.dispose();
   }
 
@@ -75,18 +92,28 @@ class _SignInViewState extends State<SignInView> {
                 ),
               ),
               TextFormField(
+                focusNode: emailFocusNode,
                 controller: _emailController,
                 style: Theme.of(context).textTheme.bodyText1,
-                validator: (value) => value!.isEmpty
-                    ? AppLocalizations.of(context)
-                        .translate("loginTextErrorEmail") : null,
+                validator: (value) {
+                  if(value!.isEmpty){
+                    return AppLocalizations.of(context).translate("signInTextErrorEmail");
+                  }
+                  else if(! RegExpUtil.isEmail(value)){
+                    return AppLocalizations.of(context).translate("signInTextRegExpErrorEmail");
+                  }else{
+                    return null;
+                  }
+                },
                 decoration: InputDecoration(
+                    errorText: _hasEmailError ? AppLocalizations.of(context)
+                          .translate("signInTextRegExpErrorEmail") : null,
                     prefixIcon: Icon(
                       Icons.email,
                       color: Theme.of(context).iconTheme.color,
                     ),
                     labelText: AppLocalizations.of(context)
-                        .translate("loginTextEmail"),
+                        .translate("signInTextEmail"),
                     border: const OutlineInputBorder()),
               ),
               Padding(
@@ -96,9 +123,9 @@ class _SignInViewState extends State<SignInView> {
                   maxLength: 12,
                   controller: _passwordController,
                   style: Theme.of(context).textTheme.bodyText1,
-                  validator: (value) => value!.length < 6
+                  validator: (value) => value!.isEmpty
                       ? AppLocalizations.of(context)
-                      .translate("loginTextErrorPassword")
+                      .translate("signInTextErrorPassword")
                       : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(
@@ -106,7 +133,7 @@ class _SignInViewState extends State<SignInView> {
                         color: Theme.of(context).iconTheme.color,
                       ),
                       labelText: AppLocalizations.of(context)
-                          .translate("loginTextPassword"),
+                          .translate("signInTextPassword"),
                       border: const OutlineInputBorder()),
                 ),
               ),
@@ -133,7 +160,7 @@ class _SignInViewState extends State<SignInView> {
                     }
 
                   },
-                  child: const Text("로그인")
+                  child: Text(AppLocalizations.of(context).translate("signIn")),
               ),
               const SizedBox(
                 height: 5.0,
@@ -152,3 +179,9 @@ class _SignInViewState extends State<SignInView> {
     );
   }
 }
+
+/** TODO
+ * 이메일 텍스트폼 아웃포커스 시 이메일 유효성 OK
+ * 체인지이벤트로 value null or 이메일 유효성 이면 로그인버튼 비활성화
+ *
+ * */

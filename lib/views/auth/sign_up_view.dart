@@ -1,12 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:myref/models/request_model.dart';
 import 'package:flutter/material.dart';
-import 'package:crypto/crypto.dart';
 import 'package:myref/models/user_model.dart';
 import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/routes.dart';
-import 'dart:convert';
+import 'package:myref/app_localizations.dart';
 
 import 'package:provider/provider.dart';
 
@@ -84,25 +80,25 @@ class _SignUpViewState extends State<SignUpView> {
             children: <Widget>[
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: "이메일",
-                  border: OutlineInputBorder()
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).translate("signUpTextEmail"),
+                  border: const OutlineInputBorder()
                 ),
               ),
               const SizedBox(height: 20.0,),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
-                    labelText: "비밀번호",
-                    border: OutlineInputBorder()
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context).translate("signUpTextPassword"),
+                    border: const OutlineInputBorder()
                 ),
               ),
               const SizedBox(height: 20.0,),
               TextFormField(
                 controller: _passwordCheckController,
-                decoration: const InputDecoration(
-                    labelText: "비밀번호 확인",
-                    border: OutlineInputBorder()
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context).translate("signUpTextPasswordCheck"),
+                    border: const OutlineInputBorder()
                 ),
               ),
               const SizedBox(height: 20.0,),
@@ -126,7 +122,7 @@ class _SignUpViewState extends State<SignUpView> {
                     }
 
                   },
-                  child: const Text("회원가입")
+                  child: Text(AppLocalizations.of(context).translate("signUpComplete"))
               )
             ],
           ),
