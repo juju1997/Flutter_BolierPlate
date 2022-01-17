@@ -23,16 +23,26 @@ class _SignInViewState extends State<SignInView> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _hasEmailError = false;
-  late FocusNode emailFocusNode;
+  late FocusNode _emailFocusNode;
+
+  late bool _isEmptyEmail;
+  late bool _isEmptyPwd;
+  late bool _isAbleLogin;
+
   @override
   void initState() {
     super.initState();
+
+    _isEmptyEmail = true;
+    _isEmptyPwd = true;
+    _isAbleLogin = false;
+
     _emailController = TextEditingController(text: "");
     _passwordController = TextEditingController(text: "");
 
-    emailFocusNode = FocusNode();
-    emailFocusNode.addListener(() {
-      if( !emailFocusNode.hasFocus ){
+    _emailFocusNode = FocusNode();
+    _emailFocusNode.addListener(() {
+      if( !_emailFocusNode.hasFocus ){
         setState(() {
           _hasEmailError = RegExpUtil.isNotEmail(_emailController.text) && _emailController.text.isNotEmpty;
         });
@@ -43,6 +53,24 @@ class _SignInViewState extends State<SignInView> {
       }
     });
   }
+
+  // 로그인 가능여부 확인
+  void _ableLogin(String type, bool isAble){
+    setState(() {
+      if(type == 'email'){
+        isAble ? _isEmptyEmail = false : _isEmptyEmail = true;
+      }
+      if(type == 'pwd'){
+        isAble ? _isEmptyPwd = false : _isEmptyPwd = true;
+      }
+      if(_isEmptyEmail || _isEmptyPwd) {
+        _isAbleLogin = false;
+      }else{
+        _isAbleLogin = true;
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +96,7 @@ class _SignInViewState extends State<SignInView> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    emailFocusNode.dispose();
+    _emailFocusNode.dispose();
     super.dispose();
   }
 
@@ -92,7 +120,14 @@ class _SignInViewState extends State<SignInView> {
                 ),
               ),
               TextFormField(
-                focusNode: emailFocusNode,
+                onChanged: (_){
+                  if(_emailController.text.isEmpty){
+                    _ableLogin('email', false);
+                  }else{
+                    _ableLogin('email', true);
+                  }
+                },
+                focusNode: _emailFocusNode,
                 controller: _emailController,
                 style: Theme.of(context).textTheme.bodyText1,
                 validator: (value) {
@@ -119,6 +154,13 @@ class _SignInViewState extends State<SignInView> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: TextFormField(
+                  onChanged: (_){
+                    if(_passwordController.text.isEmpty){
+                      _ableLogin('pwd', false);
+                    }else{
+                      _ableLogin('pwd', true);
+                    }
+                  },
                   obscureText: true,
                   maxLength: 12,
                   controller: _passwordController,
@@ -142,24 +184,23 @@ class _SignInViewState extends State<SignInView> {
                   child: CircularProgressIndicator()
               )
                   : ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      FocusScope.of(context).unfocus();
+                      onPressed: _isAbleLogin ? () async {
+                        if (_formKey.currentState!.validate()) {
+                          FocusScope.of(context).unfocus();
 
-                      bool status =
+                          bool status =
                           await authProvider.signInWithEmailAndPassword(
                               _emailController.text,
                               _passwordController.text
-                      );
+                          );
 
-                      if( !status ){
-                        print('로그인 실패');
-                      }else {
-                        print('로그인 성공');
-                      }
-                    }
-
-                  },
+                          if( !status ){
+                            print('로그인 실패');
+                          }else {
+                            print('로그인 성공');
+                          }
+                        }
+                      } : null,
                   child: Text(AppLocalizations.of(context).translate("signIn")),
               ),
               const SizedBox(
@@ -167,11 +208,10 @@ class _SignInViewState extends State<SignInView> {
               ),
               ElevatedButton(
                   onPressed: (){
-                    Navigator.of(context)
-                        .pushNamed(Routes.signUp);
+                    Navigator.of(context).pushNamed(Routes.signUp);
                   },
                   child: Text(AppLocalizations.of(context).translate("signUp"))
-              )
+              ),
             ],
           ),
         ),
