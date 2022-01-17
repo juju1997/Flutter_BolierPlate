@@ -22,12 +22,21 @@ class _SignInViewState extends State<SignInView> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // 이메일 형식 오류
   bool _hasEmailError = false;
-  late FocusNode _emailFocusNode;
 
+  late FocusNode _emailFocusNode;
+  late FocusNode _pwdFocusNode;
+
+  // 이메일 공백체크
   late bool _isEmptyEmail;
+  // 비밀번호 공백체크
   late bool _isEmptyPwd;
+  // 로그인 버튼 활성화 여부
   late bool _isAbleLogin;
+
+  // 로그인 실패
+  late bool _isLoginFailed;
 
   @override
   void initState() {
@@ -36,7 +45,7 @@ class _SignInViewState extends State<SignInView> {
     _isEmptyEmail = true;
     _isEmptyPwd = true;
     _isAbleLogin = false;
-
+    _isLoginFailed = false;
     _emailController = TextEditingController(text: "");
     _passwordController = TextEditingController(text: "");
 
@@ -48,10 +57,18 @@ class _SignInViewState extends State<SignInView> {
         });
       }else{
         setState(() {
+          _isLoginFailed = false;
           _hasEmailError = false;
         });
       }
     });
+    _pwdFocusNode = FocusNode();
+    _pwdFocusNode.addListener(() {
+      if(_pwdFocusNode.hasFocus){
+        _isLoginFailed = false;
+      }
+    });
+
   }
 
   // 로그인 가능여부 확인
@@ -68,6 +85,12 @@ class _SignInViewState extends State<SignInView> {
       }else{
         _isAbleLogin = true;
       }
+    });
+  }
+  // 로그인 실패 메시지 컨트롤
+  void _isLoginFailedMsg(bool status){
+    setState(() {
+      _isLoginFailed = status;
     });
   }
 
@@ -120,6 +143,7 @@ class _SignInViewState extends State<SignInView> {
                 ),
               ),
               TextFormField(
+                focusNode: _emailFocusNode,
                 onChanged: (_){
                   if(_emailController.text.isEmpty){
                     _ableLogin('email', false);
@@ -127,7 +151,6 @@ class _SignInViewState extends State<SignInView> {
                     _ableLogin('email', true);
                   }
                 },
-                focusNode: _emailFocusNode,
                 controller: _emailController,
                 style: Theme.of(context).textTheme.bodyText1,
                 validator: (value) {
@@ -141,8 +164,11 @@ class _SignInViewState extends State<SignInView> {
                   }
                 },
                 decoration: InputDecoration(
-                    errorText: _hasEmailError ? AppLocalizations.of(context)
-                          .translate("signInTextRegExpErrorEmail") : null,
+                  errorText: _hasEmailError
+                            ? AppLocalizations.of(context).translate("signInTextRegExpErrorEmail")
+                            : _isLoginFailed
+                              ? AppLocalizations.of(context).translate("signInNoRegistered")
+                              : null,
                     prefixIcon: Icon(
                       Icons.email,
                       color: Theme.of(context).iconTheme.color,
@@ -154,6 +180,7 @@ class _SignInViewState extends State<SignInView> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: TextFormField(
+                  focusNode: _pwdFocusNode,
                   onChanged: (_){
                     if(_passwordController.text.isEmpty){
                       _ableLogin('pwd', false);
@@ -185,18 +212,17 @@ class _SignInViewState extends State<SignInView> {
               )
                   : ElevatedButton(
                       onPressed: _isAbleLogin ? () async {
+                        _isLoginFailedMsg(false);
                         if (_formKey.currentState!.validate()) {
-                          FocusScope.of(context).unfocus();
-
                           bool status =
-                          await authProvider.signInWithEmailAndPassword(
-                              _emailController.text,
-                              _passwordController.text
-                          );
-
+                            await authProvider.signInWithEmailAndPassword(
+                                _emailController.text,
+                                _passwordController.text
+                            );
                           if( !status ){
-                            print('로그인 실패');
+                            _isLoginFailedMsg(true);
                           }else {
+                            FocusScope.of(context).unfocus(); // 키보드 내리기
                             print('로그인 성공');
                           }
                         }
@@ -219,9 +245,3 @@ class _SignInViewState extends State<SignInView> {
     );
   }
 }
-
-/** TODO
- * 이메일 텍스트폼 아웃포커스 시 이메일 유효성 OK
- * 체인지이벤트로 value null or 이메일 유효성 이면 로그인버튼 비활성화
- *
- * */
