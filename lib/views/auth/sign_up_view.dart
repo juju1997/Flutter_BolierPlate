@@ -33,25 +33,40 @@ class _SignUpViewState extends State<SignUpView> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "SignUpView TEST",
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text("SignUpView"),
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.purple,
-            icon: const Icon(Icons.arrow_back),
+      home: GestureDetector(
+        onTap: (){
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset : false,
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(
+                AppLocalizations.of(context).translate("signUpAppBarTitle"),
+                style: const TextStyle(color: Colors.black),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(
+                Icons.chevron_left_outlined,
+                color: Colors.black,
+                size: 35.0
+              )
+            ),
           ),
-        ),
-        body: Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.center,
-              child: _buildForm(context),
-            )
-          ],
+          extendBodyBehindAppBar: true,
+          body: Stack(
+            children: <Widget>[
+              Align(
+                alignment: Alignment.center,
+                child: _buildForm(context),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -78,26 +93,35 @@ class _SignUpViewState extends State<SignUpView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TextFormField(
+              Text(
+                AppLocalizations.of(context).translate("signUpEmailLabel")
+              ),
+              const SizedBox(height: 6.0),
+              TextField(
+                keyboardType: TextInputType.emailAddress,
                 controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).translate("signUpTextEmail"),
-                  border: const OutlineInputBorder()
+                  hintText: AppLocalizations.of(context).translate("signUpTextEmail"),
+                  border: const OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 20.0,),
+              const SizedBox(height: 30.0),
+              Text(
+                  AppLocalizations.of(context).translate("signUpPasswordLabel")
+              ),
+              const SizedBox(height: 6.0),
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context).translate("signUpTextPassword"),
+                    hintText: AppLocalizations.of(context).translate("signUpTextPassword"),
                     border: const OutlineInputBorder()
                 ),
               ),
-              const SizedBox(height: 20.0,),
+              const SizedBox(height: 10.0,),
               TextFormField(
                 controller: _passwordCheckController,
                 decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context).translate("signUpTextPasswordCheck"),
+                    hintText: AppLocalizations.of(context).translate("signUpTextPasswordCheck"),
                     border: const OutlineInputBorder()
                 ),
               ),

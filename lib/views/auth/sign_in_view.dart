@@ -102,6 +102,7 @@ class _SignInViewState extends State<SignInView> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        resizeToAvoidBottomInset : false,
         key: _scaffoldKey,
         body: Stack(
           children: <Widget>[
@@ -138,11 +139,9 @@ class _SignInViewState extends State<SignInView> {
             children: <Widget>[
               const Padding(
                 padding: EdgeInsets.all(8.0),
-                child: FlutterLogo(
-                  size: 128,
-                ),
               ),
               TextFormField(
+                keyboardType: TextInputType.emailAddress,
                 focusNode: _emailFocusNode,
                 onChanged: (_){
                   if(_emailController.text.isEmpty){
@@ -180,6 +179,7 @@ class _SignInViewState extends State<SignInView> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: TextFormField(
+                  keyboardType: TextInputType.text,
                   focusNode: _pwdFocusNode,
                   onChanged: (_){
                     if(_passwordController.text.isEmpty){
@@ -189,7 +189,6 @@ class _SignInViewState extends State<SignInView> {
                     }
                   },
                   obscureText: true,
-                  maxLength: 12,
                   controller: _passwordController,
                   style: Theme.of(context).textTheme.bodyText1,
                   validator: (value) => value!.isEmpty
@@ -206,6 +205,7 @@ class _SignInViewState extends State<SignInView> {
                       border: const OutlineInputBorder()),
                 ),
               ),
+              const SizedBox(height: 15.0),
               authProvider.status == Status.registering
                   ? const Center(
                   child: CircularProgressIndicator()
