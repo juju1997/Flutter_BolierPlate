@@ -134,17 +134,12 @@ class _SignUpViewState extends State<SignUpView> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       FocusScope.of(context).unfocus();
-
                       UserModel userModel =
-                            await authProvider.registerWithEmailAndPassword(
-                          _emailController.text,
-                          _passwordCheckController.text);
-                      if(userModel == null) {
-                        print('회원가입 실패');
-                      }
-                      print(userModel.toJson());
+                        await authProvider.registerWithEmailAndPassword(
+                            _emailController.text,
+                            _passwordCheckController.text);
+                      
                     }
-
                   },
                   child: Text(AppLocalizations.of(context).translate("signUpComplete"))
               )
