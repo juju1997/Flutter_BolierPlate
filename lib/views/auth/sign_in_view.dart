@@ -209,7 +209,7 @@ class _SignInViewState extends State<SignInView> {
               authProvider.status == Status.registering
                   ? const Center(
                   child: CircularProgressIndicator()
-              )
+                  )
                   : ElevatedButton(
                       onPressed: _isAbleLogin ? () async {
                         _isLoginFailedMsg(false);

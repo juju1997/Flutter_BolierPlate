@@ -3,7 +3,7 @@ import 'package:myref/models/user_model.dart';
 import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/routes.dart';
 import 'package:myref/app_localizations.dart';
-
+import 'package:myref/utils/reg_exp_util.dart';
 import 'package:provider/provider.dart';
 
 class SignUpView extends StatefulWidget {
@@ -22,8 +22,15 @@ class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  late FocusNode _emailFocusNode;
+  late FocusNode _passwordFocusNode;
   bool _hasSignUpError = false;
-  String errorMsg = '';
+  String _emailErrorMsg = '';
+  bool _hasPasswordError = false;
+  String _passwordErrorMsg = '';
+  bool _hasPasswordCheckError = false;
+  String _passwordCheckErrorMsg = '';
+  bool _isAbleSignUp = false;
 
   @override
   void initState() {
@@ -32,8 +39,63 @@ class _SignUpViewState extends State<SignUpView> {
     _passwordController = TextEditingController(text: "");
     _passwordCheckController = TextEditingController(text: "");
 
+    _emailFocusNode = FocusNode();
+    _emailFocusNode.addListener(() {
+      if( !_emailFocusNode.hasFocus ){
+        setState(() {
+          // 이메일 인풋이 비었을때
+          if( _emailController.text.isEmpty ) {
+           _emailErrorMsg = AppLocalizations.of(context).translate("signUpTextEmail");
+           _hasSignUpError = true;
+           // 이메일 형식이 아닐때
+          }else if( RegExpUtil.isNotEmail(_emailController.text) ) {
+            _emailErrorMsg = AppLocalizations.of(context).translate("signUpTextRegExpErrorEmail");
+            _hasSignUpError = true;
+          }else{
+            _hasSignUpError = false;
+          }
+        });
+      }else{
+        _hasSignUpError = false;
+      }
+    });
+    _passwordFocusNode = FocusNode();
+    _passwordFocusNode.addListener(() {
+      if( !_passwordFocusNode.hasFocus ){
+        setState(() {
+          if( _passwordController.text.isEmpty ) {
+            _passwordErrorMsg = AppLocalizations.of(context).translate("signUpTextPassword");
+            _hasPasswordError = true;
+          }else if( _passwordController.text.length < 6 ) {
+            _passwordErrorMsg = AppLocalizations.of(context).translate("signUpPasswordCond");
+            _hasPasswordError = true;
+          }else{
+            _hasPasswordError = false;
+          }
+        });
+      }else{
+        _hasPasswordError = false;
+      }
+    });
   }
-  
+
+  // 비밀번호 유효성 검사
+  void _validPassword(bool validRes, String msg){
+    setState(() {
+      _hasPasswordError = validRes;
+      if( _hasPasswordError ) {
+        _passwordErrorMsg = msg;
+      }
+    });
+  }
+
+  // 회원가입 가능 여부
+  // TODO
+  void _ableSignUp(String type, bool isAble) {
+    setState(() {
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -81,6 +143,7 @@ class _SignUpViewState extends State<SignUpView> {
     _emailController.dispose();
     _passwordController.dispose();
     _passwordCheckController.dispose();
+    _emailFocusNode.dispose();
     super.dispose();
   }
 
@@ -102,11 +165,12 @@ class _SignUpViewState extends State<SignUpView> {
               ),
               const SizedBox(height: 6.0),
               TextField(
+                focusNode: _emailFocusNode,
                 keyboardType: TextInputType.emailAddress,
                 controller: _emailController,
                 decoration: InputDecoration(
                   errorText : _hasSignUpError
-                      ? errorMsg
+                      ? _emailErrorMsg
                       : null,
                   hintText: AppLocalizations.of(context).translate("signUpTextEmail"),
                   border: const OutlineInputBorder(),
@@ -118,10 +182,27 @@ class _SignUpViewState extends State<SignUpView> {
               ),
               const SizedBox(height: 6.0),
               TextFormField(
+                focusNode: _passwordFocusNode,
                 obscureText: true,
+                onChanged: (_) {
+                  if(_passwordController.text.length < 6){
+                    _validPassword(
+                      true,
+                      AppLocalizations.of(context).translate("signUpPasswordCond")
+                    );
+                  }else {
+                    _validPassword(
+                      false,
+                      ''
+                    );
+                  }
+                },
                 controller: _passwordController,
                 decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context).translate("signUpTextPassword"),
+                    errorText: _hasPasswordError
+                                ? _passwordErrorMsg
+                                : null,
+                    hintText: AppLocalizations.of(context).translate("signUpPasswordCond"),
                     border: const OutlineInputBorder()
                 ),
               ),
@@ -140,7 +221,7 @@ class _SignUpViewState extends State<SignUpView> {
                   child: CircularProgressIndicator()
               )
                   : ElevatedButton(
-                  onPressed: () async {
+                  onPressed: _isAbleSignUp ? () async {
                     if (_formKey.currentState!.validate()) {
                       FocusScope.of(context).unfocus();
 
@@ -151,22 +232,22 @@ class _SignUpViewState extends State<SignUpView> {
                             _emailController.text,
                             _passwordCheckController.text);
                       }catch (e){
-                        errorMsg = e.toString();
+                        _emailErrorMsg = e.toString();
 
-                        if( errorMsg.contains("email-already-in-use") ){
-                          errorMsg = AppLocalizations.of(context).translate("email-already-in-use");
+                        if( _emailErrorMsg.contains("email-already-in-use") ){
+                          _emailErrorMsg = AppLocalizations.of(context).translate("email-already-in-use");
                         }
-                        else if( errorMsg.contains("invalid-email") ){
-                          errorMsg = AppLocalizations.of(context).translate("invalid-email");
+                        else if( _emailErrorMsg.contains("invalid-email") ){
+                          _emailErrorMsg = AppLocalizations.of(context).translate("invalid-email");
                         }
-                        else if( errorMsg.contains("operation-not-allowed") ){
-                          errorMsg = AppLocalizations.of(context).translate("operation-not-allowed");
+                        else if( _emailErrorMsg.contains("operation-not-allowed") ){
+                          _emailErrorMsg = AppLocalizations.of(context).translate("operation-not-allowed");
                         }
-                        else if( errorMsg.contains("weak-password") ){
-                          errorMsg = AppLocalizations.of(context).translate("weak-password");
+                        else if( _emailErrorMsg.contains("weak-password") ){
+                          _emailErrorMsg = AppLocalizations.of(context).translate("weak-password");
                         }
                         else {
-                          errorMsg = AppLocalizations.of(context).translate("unknownError");
+                          _emailErrorMsg = AppLocalizations.of(context).translate("unknownError");
                         }
                         setState(() {
                           _hasSignUpError = true;
@@ -175,7 +256,8 @@ class _SignUpViewState extends State<SignUpView> {
                       }
 
                     }
-                  },
+                  }
+                  : null,
                   child: Text(AppLocalizations.of(context).translate("signUpComplete"))
               )
             ],
