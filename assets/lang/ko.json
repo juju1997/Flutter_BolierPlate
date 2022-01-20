@@ -1,5 +1,6 @@
 {
   "___common___": "___공통___",
+  "unknownError": "죄송합니다, 다시 시도해주시기 바랍니다.",
 
   "___splash_view___": "___스플래쉬___",
   "splashText": "랜덤 메세지",
@@ -22,7 +23,9 @@
   "signUpTextEmail": "이메일을 입력해주세요 ",
   "signUpTextPassword": "비밀번호를 입력해주세요",
   "signUpTextPasswordCheck": "비밀번호를 한번 더 입력해주세요",
-  "signUpComplete": "회원가입"
-
-
+  "signUpComplete": "회원가입",
+  "email-already-in-use": "이미 사용중인 이메일입니다.",
+  "invalid-email": "잘못된 이메일 형식입니다.",
+  "operation-not-allowed": "사용할 수 없는 이메일입니다.",
+  "weak-password": "비밀번호 보안 수준이 너무 낮습니다."
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myref/models/user_model.dart';
+import 'package:flutter/services.dart';
 
 enum Status {
   unInitialized,
@@ -70,13 +71,11 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       final UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-
       return _userFromFirebase(result.user);
     } catch (e) {
-      print("Error on the new user registration = " + e.toString());
       _status = Status.unAuthenticated;
       notifyListeners();
-      return UserModel(uid: 'null');
+      rethrow;
     }
   }
 

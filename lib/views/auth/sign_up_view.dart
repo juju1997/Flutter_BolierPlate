@@ -22,12 +22,16 @@ class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  bool _hasSignUpError = false;
+  String errorMsg = '';
+
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController(text: "");
     _passwordController = TextEditingController(text: "");
     _passwordCheckController = TextEditingController(text: "");
+
   }
   
   @override
@@ -101,6 +105,9 @@ class _SignUpViewState extends State<SignUpView> {
                 keyboardType: TextInputType.emailAddress,
                 controller: _emailController,
                 decoration: InputDecoration(
+                  errorText : _hasSignUpError
+                      ? errorMsg
+                      : null,
                   hintText: AppLocalizations.of(context).translate("signUpTextEmail"),
                   border: const OutlineInputBorder(),
                 ),
@@ -111,6 +118,7 @@ class _SignUpViewState extends State<SignUpView> {
               ),
               const SizedBox(height: 6.0),
               TextFormField(
+                obscureText: true,
                 controller: _passwordController,
                 decoration: InputDecoration(
                     hintText: AppLocalizations.of(context).translate("signUpTextPassword"),
@@ -119,6 +127,7 @@ class _SignUpViewState extends State<SignUpView> {
               ),
               const SizedBox(height: 10.0,),
               TextFormField(
+                obscureText: true,
                 controller: _passwordCheckController,
                 decoration: InputDecoration(
                     hintText: AppLocalizations.of(context).translate("signUpTextPasswordCheck"),
@@ -134,11 +143,37 @@ class _SignUpViewState extends State<SignUpView> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       FocusScope.of(context).unfocus();
-                      UserModel userModel =
+
+                      // 회원가입 결과
+                      try{
+                        UserModel userModel =
                         await authProvider.registerWithEmailAndPassword(
                             _emailController.text,
                             _passwordCheckController.text);
-                      
+                      }catch (e){
+                        errorMsg = e.toString();
+
+                        if( errorMsg.contains("email-already-in-use") ){
+                          errorMsg = AppLocalizations.of(context).translate("email-already-in-use");
+                        }
+                        else if( errorMsg.contains("invalid-email") ){
+                          errorMsg = AppLocalizations.of(context).translate("invalid-email");
+                        }
+                        else if( errorMsg.contains("operation-not-allowed") ){
+                          errorMsg = AppLocalizations.of(context).translate("operation-not-allowed");
+                        }
+                        else if( errorMsg.contains("weak-password") ){
+                          errorMsg = AppLocalizations.of(context).translate("weak-password");
+                        }
+                        else {
+                          errorMsg = AppLocalizations.of(context).translate("unknownError");
+                        }
+                        setState(() {
+                          _hasSignUpError = true;
+                        });
+
+                      }
+
                     }
                   },
                   child: Text(AppLocalizations.of(context).translate("signUpComplete"))
