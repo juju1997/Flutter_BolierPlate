@@ -74,6 +74,7 @@ class _SignUpViewState extends State<SignUpView> {
           }
         });
       }else{
+        _hasPasswordCheckError = false;
         _hasPasswordError = false;
       }
     });
@@ -88,11 +89,33 @@ class _SignUpViewState extends State<SignUpView> {
       }
     });
   }
-
-  // 회원가입 가능 여부
-  // TODO
+  // 비밀번호 확인 검사
+  void _validPasswordCheck(bool validRes, String msg){
+    setState(() {
+      _hasPasswordCheckError = validRes;
+      if(_hasPasswordCheckError){
+        _passwordCheckErrorMsg = msg;
+      }
+    });
+  }
+  // 회원가입버튼 활성화여부 설정
   void _ableSignUp(String type, bool isAble) {
     setState(() {
+      if(type == 'email'){
+        isAble ? _hasSignUpError = false : _hasSignUpError = true;
+      }
+      else if(type == 'pwd'){
+        isAble ? _hasPasswordError = false : _hasPasswordError = true;
+      }
+      else if(type == 'pwdCheck'){
+        isAble ? _hasPasswordCheckError = false : _hasPasswordCheckError = true;
+      }
+      if(_hasSignUpError || _hasPasswordError || _hasPasswordCheckError) {
+        _isAbleSignUp = false;
+      }
+      else{
+        _isAbleSignUp = true;
+      }
     });
   }
 
@@ -190,11 +213,31 @@ class _SignUpViewState extends State<SignUpView> {
                       true,
                       AppLocalizations.of(context).translate("signUpPasswordCond")
                     );
-                  }else {
-                    _validPassword(
-                      false,
-                      ''
+                    _ableSignUp("pwd", false);
+                  }else if( !_hasPasswordError ){
+                    if(_passwordController.text == _passwordCheckController.text){
+                      _validPasswordCheck(false, '');
+                    }else{
+                      _validPasswordCheck(true,
+                          AppLocalizations.of(context).translate("signUpPasswordNotSame")
+                      );
+                    }
+                  }
+                  else if( _passwordController.text.isEmpty ) {
+                    _validPasswordCheck(true,
+                        AppLocalizations.of(context).translate("signUpPasswordTry")
                     );
+                    _ableSignUp("pwdCheck", false);
+                  }
+                  else if( _passwordCheckController.text.isNotEmpty ){
+                    if(_passwordController.text != _passwordCheckController.text){
+                      _validPasswordCheck(true,
+                          AppLocalizations.of(context).translate("signUpPasswordNotSame")
+                      );
+                    }
+                  }else {
+                    _validPassword(false, '');
+                    _ableSignUp("pwd", true);
                   }
                 },
                 controller: _passwordController,
@@ -208,9 +251,30 @@ class _SignUpViewState extends State<SignUpView> {
               ),
               const SizedBox(height: 10.0,),
               TextFormField(
+                onChanged: (_) {
+                  // 비밀번호 에러상태
+                  if ( _hasPasswordError ) {
+                    _validPasswordCheck(true,
+                        AppLocalizations.of(context).translate("signUpPasswordReTry")
+                    );
+                    _ableSignUp("pwdCheck", false);
+                    // 비밀번호 비어있어서 에러가 아닌 상태
+                  }else if( _passwordController.text.isEmpty ) {
+                    _validPasswordCheck(true,
+                        AppLocalizations.of(context).translate("signUpPasswordTry")
+                    );
+                    _ableSignUp("pwdCheck", false);
+                  }else{
+                    _validPasswordCheck(false, '');
+                    _ableSignUp("pwdCheck", true);
+                  }
+                },
                 obscureText: true,
                 controller: _passwordCheckController,
                 decoration: InputDecoration(
+                    errorText: _hasPasswordCheckError
+                                ? _passwordCheckErrorMsg
+                                : null,
                     hintText: AppLocalizations.of(context).translate("signUpTextPasswordCheck"),
                     border: const OutlineInputBorder()
                 ),

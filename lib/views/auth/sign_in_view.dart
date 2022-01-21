@@ -77,7 +77,7 @@ class _SignInViewState extends State<SignInView> {
       if(type == 'email'){
         isAble ? _isEmptyEmail = false : _isEmptyEmail = true;
       }
-      if(type == 'pwd'){
+      else if(type == 'pwd'){
         isAble ? _isEmptyPwd = false : _isEmptyPwd = true;
       }
       if(_isEmptyEmail || _isEmptyPwd) {
