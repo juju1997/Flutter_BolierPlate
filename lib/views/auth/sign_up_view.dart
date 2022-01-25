@@ -5,6 +5,8 @@ import 'package:myref/routes.dart';
 import 'package:myref/app_localizations.dart';
 import 'package:myref/utils/reg_exp_util.dart';
 import 'package:provider/provider.dart';
+import 'package:progress_state_button/iconed_button.dart';
+import 'package:progress_state_button/progress_button.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({Key? key}) : super(key: key);
@@ -30,6 +32,7 @@ class _SignUpViewState extends State<SignUpView> {
   late bool _isSignUpError;
   late bool _isAbleSignUp;
 
+  late ButtonState _btnState;
   @override
   void initState() {
     super.initState();
@@ -46,6 +49,8 @@ class _SignUpViewState extends State<SignUpView> {
     _isSignUpError = false;
     _isAbleSignUp = false;
 
+    _btnState = ButtonState.fail;
+
     // 이메일 포커스노드
     _emailFocusNode.addListener(() {
       setState(() {
@@ -59,9 +64,9 @@ class _SignUpViewState extends State<SignUpView> {
             _errorEmailMsg = AppLocalizations.of(context).translate("signUpTextRegExpErrorEmail");
           }
         }else{
-            _isSignUpError = false;
-            _isEmailError = false;
-            _errorEmailMsg = "";
+          _isSignUpError = false;
+          _isEmailError = false;
+          _errorEmailMsg = "";
         }
         funcIsAbleSignUp();
       });
@@ -70,20 +75,21 @@ class _SignUpViewState extends State<SignUpView> {
     // 비밀번호 포커스노드
     _pwdFocusNode.addListener(() {
       setState(() {
-       if( !_pwdFocusNode.hasFocus ) {
-         if( _passwordController.text.isEmpty ) {
-           _isPwdError = true;
-           _errorPwdMsg = AppLocalizations.of(context).translate("signUpTextPassword");
-         }
-       }else{
+        if( !_pwdFocusNode.hasFocus ) {
+          if( _passwordController.text.isEmpty ) {
+            _isPwdError = true;
+            _errorPwdMsg = AppLocalizations.of(context).translate("signUpTextPassword");
+          }
+        }else{
           _isPwdError = false;
           _errorPwdMsg = "";
-       }
-       funcIsAbleSignUp();
+        }
+        funcIsAbleSignUp();
       });
     });
   }
 
+  // 회원가입 가능여부 확인
   void funcIsAbleSignUp() {
     setState(() {
       if( _emailController.text.isNotEmpty
@@ -95,8 +101,34 @@ class _SignUpViewState extends State<SignUpView> {
           _isAbleSignUp = true;
         }
       }
+
+      if( _isAbleSignUp ) {
+        _btnState = ButtonState.idle;
+      }else{
+        _btnState = ButtonState.fail;
+      }
     });
   }
+
+  void changeBtnState(String type) {
+    setState(() {
+      if(type == 'loading'){
+        _btnState = ButtonState.loading;
+      }
+      else if(type == 'idle'){
+        _btnState = ButtonState.idle;
+      }
+      else if(type == 'fail'){
+        _btnState = ButtonState.fail;
+      }
+      else if(type == 'success'){
+        _btnState = ButtonState.success;
+      }
+
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,20 +142,20 @@ class _SignUpViewState extends State<SignUpView> {
           appBar: AppBar(
             centerTitle: true,
             title: Text(
-                AppLocalizations.of(context).translate("signUpAppBarTitle"),
-                style: const TextStyle(color: Colors.black),
+              AppLocalizations.of(context).translate("signUpAppBarTitle"),
+              style: const TextStyle(color: Colors.black),
             ),
             backgroundColor: Colors.transparent,
             elevation: 0.0,
             leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(
-                Icons.chevron_left_outlined,
-                color: Colors.black,
-                size: 35.0
-              )
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(
+                    Icons.chevron_left_outlined,
+                    color: Colors.black,
+                    size: 35.0
+                )
             ),
           ),
           extendBodyBehindAppBar: true,
@@ -160,11 +192,15 @@ class _SignUpViewState extends State<SignUpView> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                AppLocalizations.of(context).translate("signUpEmailLabel")
+              Row(
+                children:<Widget>[
+                  Text(
+                    AppLocalizations.of(context).translate("signUpEmailLabel"),
+                    textAlign: TextAlign.left,
+                  ),
+                ],
               ),
               const SizedBox(height: 6.0),
               TextFormField(
@@ -173,17 +209,21 @@ class _SignUpViewState extends State<SignUpView> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   errorText: _isEmailError
-                              ? _errorEmailMsg
-                              : _isSignUpError
-                                ? _errorEmailMsg
-                                : null,
+                      ? _errorEmailMsg
+                      : _isSignUpError
+                      ? _errorEmailMsg
+                      : null,
                   hintText: AppLocalizations.of(context).translate("signUpTextEmail"),
                   border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 30.0),
-              Text(
-                  AppLocalizations.of(context).translate("signUpPasswordLabel")
+              Row(
+                children: <Widget>[
+                  Text(
+                      AppLocalizations.of(context).translate("signUpPasswordLabel")
+                  )
+                ],
               ),
               const SizedBox(height: 6.0),
               TextFormField(
@@ -254,50 +294,56 @@ class _SignUpViewState extends State<SignUpView> {
                     border: const OutlineInputBorder()
                 ),
               ),
-              const SizedBox(height: 20.0,),
+              const SizedBox(height: 20.0),
               authProvider.status == Status.registering
-                  ? const Center(
-                  child: CircularProgressIndicator()
-              )
-                  : ElevatedButton(
-                  onPressed: _isAbleSignUp ? () async {
-                    if (_formKey.currentState!.validate()) {
-                      FocusScope.of(context).unfocus();
+                ? ProgressButton(
+                    stateWidgets: btnState(context),
+                    stateColors: btnColor(context),
+                    onPressed: (){},
+                    state: ButtonState.loading,
+                    )
+                :
+                  ProgressButton(
+                    stateWidgets: btnState(context),
+                    stateColors: btnColor(context),
+                    onPressed: () async {
+                      if( _btnState == ButtonState.idle ) {
+                        if (_formKey.currentState!.validate()) {
+                          FocusScope.of(context).unfocus();
+                          // 회원가입 결과
+                          try{
+                            UserModel userModel =
+                            await authProvider.registerWithEmailAndPassword(
+                                _emailController.text,
+                                _passwordCheckController.text);
+                            _isEmailError = false;
+                          }catch (e){
+                            _errorEmailMsg = e.toString();
 
-                      // 회원가입 결과
-                      try{
-                        UserModel userModel =
-                        await authProvider.registerWithEmailAndPassword(
-                            _emailController.text,
-                            _passwordCheckController.text);
-                        _isEmailError = false;
-                      }catch (e){
-                        _errorEmailMsg = e.toString();
-
-                        if( _errorEmailMsg.contains("email-already-in-use") ){
-                          _errorEmailMsg = AppLocalizations.of(context).translate("email-already-in-use");
+                            if( _errorEmailMsg.contains("email-already-in-use") ){
+                              _errorEmailMsg = AppLocalizations.of(context).translate("email-already-in-use");
+                            }
+                            else if( _errorEmailMsg.contains("invalid-email") ){
+                              _errorEmailMsg = AppLocalizations.of(context).translate("invalid-email");
+                            }
+                            else if( _errorEmailMsg.contains("operation-not-allowed") ){
+                              _errorEmailMsg = AppLocalizations.of(context).translate("operation-not-allowed");
+                            }
+                            else if( _errorEmailMsg.contains("weak-password") ){
+                              _errorEmailMsg = AppLocalizations.of(context).translate("weak-password");
+                            }
+                            else {
+                              _errorEmailMsg = AppLocalizations.of(context).translate("unknownError");
+                            }
+                            setState(() {
+                              _isSignUpError = true;
+                            });
+                          }
                         }
-                        else if( _errorEmailMsg.contains("invalid-email") ){
-                          _errorEmailMsg = AppLocalizations.of(context).translate("invalid-email");
-                        }
-                        else if( _errorEmailMsg.contains("operation-not-allowed") ){
-                          _errorEmailMsg = AppLocalizations.of(context).translate("operation-not-allowed");
-                        }
-                        else if( _errorEmailMsg.contains("weak-password") ){
-                          _errorEmailMsg = AppLocalizations.of(context).translate("weak-password");
-                        }
-                        else {
-                          _errorEmailMsg = AppLocalizations.of(context).translate("unknownError");
-                        }
-                        setState(() {
-                          _isSignUpError = true;
-                        });
                       }
-                    }
-                  }
-                  : null,
-                  child: Text(AppLocalizations.of(context).translate("signUpComplete"))
-              )
+                    },
+                    state: _btnState
+                  ),
             ],
           ),
         ),
@@ -306,3 +352,23 @@ class _SignUpViewState extends State<SignUpView> {
   }
 }
 
+Map<ButtonState, Widget> btnState(BuildContext context) {
+  return {
+    ButtonState.fail: Text(
+        AppLocalizations.of(context).translate("signUpComplete"),
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),), // 비활성버튼
+    ButtonState.idle: Text(
+      AppLocalizations.of(context).translate("signUpComplete"),
+      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),),
+    ButtonState.loading: Text("Loading",style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),),
+    ButtonState.success: Text("Success",style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),)
+  };
+}
+Map<ButtonState, Color> btnColor(BuildContext context) {
+  return {
+    ButtonState.fail: Colors.grey.shade300,  // 버튼 비활성 상태
+    ButtonState.idle: Colors.blue.shade300,
+    ButtonState.loading: Colors.blue.shade300,
+    ButtonState.success: Colors.green.shade400,
+  };
+}
