@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:myref/models/user_model.dart';
 import 'package:myref/providers/auth_provider.dart';
@@ -8,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 
+
 class SignUpView extends StatefulWidget {
   const SignUpView({Key? key}) : super(key: key);
 
@@ -16,6 +19,8 @@ class SignUpView extends StatefulWidget {
 }
 
 class _SignUpViewState extends State<SignUpView> {
+
+
 
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
@@ -317,6 +322,11 @@ class _SignUpViewState extends State<SignUpView> {
                                 _emailController.text,
                                 _passwordCheckController.text);
                             _isEmailError = false;
+
+                            setState(() {
+                              _btnState = ButtonState.success;
+                            });
+                            startTimer();
                           }catch (e){
                             _errorEmailMsg = e.toString();
 
@@ -350,18 +360,37 @@ class _SignUpViewState extends State<SignUpView> {
       ),
     );
   }
+
+  // 회원가입 시작
+  startTimer() {
+    var duration = const Duration(seconds: 1);
+    return Timer(duration, redirect);
+  }
+  // 로그인 화면으로 전환
+  redirect() async {
+    Navigator.of(context).pushReplacementNamed(Routes.signIn);
+  }
+
 }
 
 Map<ButtonState, Widget> btnState(BuildContext context) {
   return {
     ButtonState.fail: Text(
-        AppLocalizations.of(context).translate("signUpComplete"),
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),), // 비활성버튼
+        AppLocalizations.of(context).translate("signUpReady"),
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+    ), // 비활성버튼
     ButtonState.idle: Text(
+      AppLocalizations.of(context).translate("signUpReady"),
+      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+    ),
+    ButtonState.loading: Text(
+      AppLocalizations.of(context).translate("signUpLoading"),
+      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+    ),
+    ButtonState.success: Text(
       AppLocalizations.of(context).translate("signUpComplete"),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),),
-    ButtonState.loading: Text("Loading",style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),),
-    ButtonState.success: Text("Success",style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),)
+      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+    )
   };
 }
 Map<ButtonState, Color> btnColor(BuildContext context) {
@@ -372,3 +401,4 @@ Map<ButtonState, Color> btnColor(BuildContext context) {
     ButtonState.success: Colors.green.shade400,
   };
 }
+

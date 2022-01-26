@@ -24,7 +24,7 @@
   "signUpTextEmail": "이메일을 입력해주세요 ",
   "signUpTextPassword": "비밀번호를 입력해주세요",
   "signUpTextPasswordCheck": "비밀번호를 한번 더 입력해주세요",
-  "signUpComplete": "회원가입",
+  "signUpReady": "회원가입",
   "email-already-in-use": "이미 사용중인 이메일입니다",
   "invalid-email": "이메일 형식에 맞게 입력해주세요",
   "operation-not-allowed": "사용할 수 없는 이메일입니다",
@@ -32,5 +32,7 @@
   "signUpPasswordCond": "6자리 이상 입력해주세요",
   "signUpPasswordReTry": "비밀번호를 다시 설정해주세요",
   "signUpPasswordTry": "비밀번호를 설정해주세요",
-  "signUpPasswordNotSame": "비밀번호가 일치하지 않습니다"
+  "signUpPasswordNotSame": "비밀번호가 일치하지 않습니다",
+  "signUpLoading": "회원가입 중입니다...",
+  "signUpComplete": "환영합니다!"
 }
