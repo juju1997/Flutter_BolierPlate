@@ -7,7 +7,6 @@ import 'package:myref/routes.dart';
 import 'package:myref/app_localizations.dart';
 import 'package:myref/utils/reg_exp_util.dart';
 import 'package:provider/provider.dart';
-import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 
 
@@ -114,26 +113,6 @@ class _SignUpViewState extends State<SignUpView> {
       }
     });
   }
-
-  void changeBtnState(String type) {
-    setState(() {
-      if(type == 'loading'){
-        _btnState = ButtonState.loading;
-      }
-      else if(type == 'idle'){
-        _btnState = ButtonState.idle;
-      }
-      else if(type == 'fail'){
-        _btnState = ButtonState.fail;
-      }
-      else if(type == 'success'){
-        _btnState = ButtonState.success;
-      }
-
-    });
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -312,6 +291,9 @@ class _SignUpViewState extends State<SignUpView> {
                     stateWidgets: btnState(context),
                     stateColors: btnColor(context),
                     onPressed: () async {
+                      setState(() {
+                        _isSignUpError = false;
+                      });
                       if( _btnState == ButtonState.idle ) {
                         if (_formKey.currentState!.validate()) {
                           FocusScope.of(context).unfocus();
@@ -321,7 +303,6 @@ class _SignUpViewState extends State<SignUpView> {
                             await authProvider.registerWithEmailAndPassword(
                                 _emailController.text,
                                 _passwordCheckController.text);
-                            _isEmailError = false;
 
                             setState(() {
                               _btnState = ButtonState.success;

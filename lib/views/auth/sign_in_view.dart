@@ -1,10 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:myref/app_localizations.dart';
 import 'package:myref/routes.dart';
-import 'package:crypto/crypto.dart';
 import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/utils/reg_exp_util.dart';
-import 'dart:convert';
+import 'package:progress_state_button/progress_button.dart';
+import 'package:myref/views/splash/splash_view.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:provider/provider.dart';
 
@@ -38,6 +41,11 @@ class _SignInViewState extends State<SignInView> {
   // 로그인 실패
   late bool _isLoginFailed;
 
+  late ButtonState _btnState;
+
+  // Secure Storage
+  static const storage = FlutterSecureStorage();
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +56,7 @@ class _SignInViewState extends State<SignInView> {
     _isLoginFailed = false;
     _emailController = TextEditingController(text: "");
     _passwordController = TextEditingController(text: "");
+    _btnState = ButtonState.fail;
 
     _emailFocusNode = FocusNode();
     _emailFocusNode.addListener(() {
@@ -84,6 +93,12 @@ class _SignInViewState extends State<SignInView> {
         _isAbleLogin = false;
       }else{
         _isAbleLogin = true;
+      }
+
+      if( _isAbleLogin ) {
+        _btnState = ButtonState.idle;
+      }else {
+        _btnState = ButtonState.fail;
       }
     });
   }
@@ -134,7 +149,6 @@ class _SignInViewState extends State<SignInView> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               const Padding(
@@ -205,43 +219,104 @@ class _SignInViewState extends State<SignInView> {
                       border: const OutlineInputBorder()),
                 ),
               ),
-              const SizedBox(height: 15.0),
-              authProvider.status == Status.registering
-                  ? const Center(
-                  child: CircularProgressIndicator()
+              const SizedBox(height: 20.0),
+
+              authProvider.status == Status.authenticating
+                ? ProgressButton(
+                    stateWidgets: btnState(context),
+                    stateColors: btnColor(context),
+                    onPressed: (){},
+                    state: ButtonState.loading,
                   )
-                  : ElevatedButton(
-                      onPressed: _isAbleLogin ? () async {
+                :
+                  ProgressButton(
+                      stateWidgets: btnState(context),
+                      stateColors: btnColor(context),
+                      onPressed: () async {
                         _isLoginFailedMsg(false);
-                        if (_formKey.currentState!.validate()) {
-                          bool status =
+                        if( _btnState == ButtonState.idle ){
+                          if (_formKey.currentState!.validate()) {
+                            bool status =
                             await authProvider.signInWithEmailAndPassword(
                                 _emailController.text,
                                 _passwordController.text
                             );
-                          if( !status ){
-                            _isLoginFailedMsg(true);
-                          }else {
-                            FocusScope.of(context).unfocus(); // 키보드 내리기
-                            print('로그인 성공');
+                            if( !status ){
+                              _isLoginFailedMsg(true);
+                            }else {
+                              FocusScope.of(context).unfocus(); // 키보드 내리기
+
+                              // userInfo save to Secure
+                              storage.write(
+                                  key: 'login',
+                                  value: _emailController.text + ' : ' + _passwordController.text
+                              );
+                              String? l = await storage.read(key: 'login');
+                              print(l);
+                              startTimer(status);
+                            }
                           }
                         }
-                      } : null,
-                  child: Text(AppLocalizations.of(context).translate("signIn")),
-              ),
+                      },
+                      state: _btnState,
+                  ),
+
               const SizedBox(
-                height: 5.0,
+                height: 80.0,
               ),
-              ElevatedButton(
-                  onPressed: (){
-                    Navigator.of(context).pushNamed(Routes.signUp);
-                  },
-                  child: Text(AppLocalizations.of(context).translate("signUp"))
-              ),
+              TextButton(
+                child: Text(AppLocalizations.of(context).translate("signUp")),
+                onPressed: () => Navigator.of(context).pushNamed(Routes.signUp),
+              )
             ],
           ),
         ),
       ),
     );
   }
+  // 로그인 시작
+  startTimer(bool res) {
+    var duration = const Duration(seconds: 1);
+    return Timer(duration, res ? redirect : stayView);
+  }
+  // 로그인 화면으로 전환
+  redirect() async {
+    Navigator.of(context).pushReplacementNamed(Routes.myRef);
+  }
+  // 로그인 취소
+  stayView() {}
 }
+
+
+Map<ButtonState, Widget> btnState(BuildContext context) {
+  return {
+    ButtonState.fail: Text(
+      AppLocalizations.of(context).translate("signIn"),
+      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+    ), // 비활성버튼
+    ButtonState.idle: Text(
+      AppLocalizations.of(context).translate("signIn"),
+      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+    ),
+    ButtonState.loading: Text(
+      AppLocalizations.of(context).translate("signInLoading"),
+      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+    ),
+    ButtonState.success: Text(
+      AppLocalizations.of(context).translate("sigInInComplete"),
+      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+    )
+  };
+}
+Map<ButtonState, Color> btnColor(BuildContext context) {
+  return {
+    ButtonState.fail: Colors.grey.shade300,  // 버튼 비활성 상태
+    ButtonState.idle: Colors.blue.shade300,
+    ButtonState.loading: Colors.blue.shade300,
+    ButtonState.success: Colors.green.shade400,
+  };
+}
+
+
+
+

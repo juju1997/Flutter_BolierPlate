@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:myref/routes.dart';
 import 'package:myref/app_localizations.dart';
 
@@ -19,7 +20,7 @@ class _SplashViewState extends State<SplashView> {
   }
 
   startTimer() {
-    var duration = const Duration(seconds: 2);
+    var duration = const Duration(milliseconds: 1500);
     return Timer(duration, redirect);
   }
   redirect() async {
@@ -44,7 +45,7 @@ class _SplashViewState extends State<SplashView> {
             ),
             const FlutterLogo(
               size: 128,
-            )
+            ),
           ],
         ),
       ),
