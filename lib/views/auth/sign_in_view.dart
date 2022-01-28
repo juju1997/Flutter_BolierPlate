@@ -43,9 +43,6 @@ class _SignInViewState extends State<SignInView> {
 
   late ButtonState _btnState;
 
-  // Secure Storage
-  static const storage = FlutterSecureStorage();
-
   @override
   void initState() {
     super.initState();
@@ -220,7 +217,7 @@ class _SignInViewState extends State<SignInView> {
                 ),
               ),
               const SizedBox(height: 20.0),
-
+              // 로그인중
               authProvider.status == Status.authenticating
                 ? ProgressButton(
                     stateWidgets: btnState(context),
@@ -229,38 +226,40 @@ class _SignInViewState extends State<SignInView> {
                     state: ButtonState.loading,
                   )
                 :
+              // 로그인 성공
+              authProvider.status == Status.authenticated
+                ?
                   ProgressButton(
-                      stateWidgets: btnState(context),
-                      stateColors: btnColor(context),
-                      onPressed: () async {
-                        _isLoginFailedMsg(false);
-                        if( _btnState == ButtonState.idle ){
-                          if (_formKey.currentState!.validate()) {
-                            bool status =
-                            await authProvider.signInWithEmailAndPassword(
-                                _emailController.text,
-                                _passwordController.text
-                            );
-                            if( !status ){
-                              _isLoginFailedMsg(true);
-                            }else {
-                              FocusScope.of(context).unfocus(); // 키보드 내리기
+                    stateWidgets: btnState(context),
+                    stateColors: btnColor(context),
+                    onPressed: (){},
+                    state: ButtonState.success,
+                  )
+                :
+                  ProgressButton(
+                    stateWidgets: btnState(context),
+                    stateColors: btnColor(context),
+                    onPressed: () async {
+                      _isLoginFailedMsg(false);
+                      if( _btnState == ButtonState.idle ){
+                        if (_formKey.currentState!.validate()) {
+                          bool status =
+                          await authProvider.signInWithEmailAndPassword(
+                              _emailController.text,
+                              _passwordController.text
+                          );
+                          if( !status ){
+                            _isLoginFailedMsg(true);
+                          }else {
+                            FocusScope.of(context).unfocus(); // 키보드 내리기
 
-                              // userInfo save to Secure
-                              storage.write(
-                                  key: 'login',
-                                  value: _emailController.text + ' : ' + _passwordController.text
-                              );
-                              String? l = await storage.read(key: 'login');
-                              print(l);
-                              startTimer(status);
-                            }
+                            startTimer(status);
                           }
                         }
-                      },
-                      state: _btnState,
+                      }
+                    },
+                    state: _btnState,
                   ),
-
               const SizedBox(
                 height: 80.0,
               ),

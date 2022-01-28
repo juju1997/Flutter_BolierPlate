@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:myref/models/user_model.dart';
 import 'package:flutter/services.dart';
 
@@ -10,7 +11,8 @@ enum Status {
   authenticated,
   authenticating,
   unAuthenticated,
-  registering
+  registering,
+  registered
 }
 /*
 The UI will depends on the Status to decide which screen/action to be done.
@@ -19,6 +21,7 @@ The UI will depends on the Status to decide which screen/action to be done.
 - authenticating - Sign In button just been pressed, progress bar will be shown
 - unAuthenticated - User is not authenticated, login page will be shown
 - registering - User just pressed registering, progress bar will be shown
+- registered - User success to registering
 Take note, this is just an idea. You can remove or further add more different
 status for your UI or widgets to listen.
  */
@@ -34,12 +37,17 @@ class AuthProvider extends ChangeNotifier {
 
   Stream<UserModel> get user => _auth.authStateChanges().map(_userFromFirebase);
 
+  // Secure Storage
+  static const storage = FlutterSecureStorage();
+
   AuthProvider() {
     //initialise object
     _auth = FirebaseAuth.instance;
 
     //listener for authentication changes such as user sign in and sign out
-    _auth.authStateChanges().listen(onAuthStateChanged);
+    // 직접 컨트롤
+    // _auth.authStateChanges().listen(onAuthStateChanged);
+
   }
 
   //Create user object based on the given User
@@ -73,7 +81,18 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       final UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      return _userFromFirebase(result.user);
+      _status = Status.registered;
+
+      // registering success
+      UserModel user = _userFromFirebase(result.user);
+      // TODO for dev
+      storage.deleteAll();
+      // TODO 값 암호화 연구
+      storage.write(key: 'email', value: user.email);
+      storage.write(key: 'uid', value: user.uid);
+      // TODO 신규회원 안내
+
+      return user;
     } catch (e) {
       _status = Status.unAuthenticated;
       notifyListeners();
@@ -86,7 +105,19 @@ class AuthProvider extends ChangeNotifier {
     try {
       _status = Status.authenticating;
       notifyListeners();
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      final UserCredential result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password
+      );
+      _status = Status.authenticated;
+      // login success
+      UserModel user = _userFromFirebase(result.user);
+      // TODO for dev
+      storage.deleteAll();
+
+      // TODO 값 암호화 연구
+      storage.write(key: 'email', value: user.email);
+      storage.write(key: 'uid', value: user.uid);
+
       return true;
     } catch (e) {
       print("Error on the sign in = " + e.toString());

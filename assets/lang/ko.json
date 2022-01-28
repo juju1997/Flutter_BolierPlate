@@ -15,6 +15,7 @@
   "signIn": "로그인",
   "signUp": "회원가입",
   "signInLoading": "로그인 중입니다...",
+  "sigInInComplete": "환영합니다!",
 
   "___sign_up_view___": "___회원가입___",
   "signUpEmailLabel": "이메일",

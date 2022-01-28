@@ -279,6 +279,7 @@ class _SignUpViewState extends State<SignUpView> {
                 ),
               ),
               const SizedBox(height: 20.0),
+              // 회원가입 중
               authProvider.status == Status.registering
                 ? ProgressButton(
                     stateWidgets: btnState(context),
@@ -286,6 +287,16 @@ class _SignUpViewState extends State<SignUpView> {
                     onPressed: (){},
                     state: ButtonState.loading,
                     )
+                :
+              // 회원가입 완료
+              authProvider.status == Status.registered
+                ?
+                  ProgressButton(
+                    stateWidgets: btnState(context),
+                    stateColors: btnColor(context),
+                    onPressed: (){},
+                    state: ButtonState.success,
+                  )
                 :
                   ProgressButton(
                     stateWidgets: btnState(context),
@@ -303,7 +314,6 @@ class _SignUpViewState extends State<SignUpView> {
                             await authProvider.registerWithEmailAndPassword(
                                 _emailController.text,
                                 _passwordCheckController.text);
-
                             setState(() {
                               _btnState = ButtonState.success;
                             });
@@ -349,7 +359,7 @@ class _SignUpViewState extends State<SignUpView> {
   }
   // 로그인 화면으로 전환
   redirect() async {
-    Navigator.of(context).pushReplacementNamed(Routes.signIn);
+    Navigator.of(context).pushReplacementNamed(Routes.myRef);
   }
 
 }

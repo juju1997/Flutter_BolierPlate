@@ -13,19 +13,23 @@ class SplashView extends StatefulWidget {
 
 class _SplashViewState extends State<SplashView> {
 
+  // Secure Storage
+  static const storage = FlutterSecureStorage();
+
   @override
   void initState() {
     super.initState();
-    startTimer();
+    Future.delayed(
+        const Duration(milliseconds: 1500), ()=> _checkUser(context));
   }
 
-  startTimer() {
+  /*startTimer() {
     var duration = const Duration(milliseconds: 1500);
     return Timer(duration, redirect);
   }
   redirect() async {
     Navigator.of(context).pushReplacementNamed(Routes.signIn);
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +49,23 @@ class _SplashViewState extends State<SplashView> {
             ),
             const FlutterLogo(
               size: 128,
-            ),
+            )
           ],
         ),
       ),
     );
   }
 
+  void _checkUser(context) async {
+    const storage = FlutterSecureStorage();
+    Map<String, String> allStorage = await storage.readAll();
+    print(allStorage);
+    // TODO 추후 주석 해제
+    /*if( allStorage['email']!.isNotEmpty && allStorage['uid']!.isNotEmpty) {
+      Navigator.of(context).pushReplacementNamed(Routes.myRef);
+    }else{
+      Navigator.of(context).pushReplacementNamed(Routes.signIn);
+    }*/
+    Navigator.of(context).pushReplacementNamed(Routes.signIn);
+  }
 }
