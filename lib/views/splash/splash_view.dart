@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:myref/routes.dart';
 import 'package:myref/app_localizations.dart';
+import 'package:myref/utils/encrypt.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({Key? key}) : super(key: key);
@@ -22,14 +23,6 @@ class _SplashViewState extends State<SplashView> {
     Future.delayed(
         const Duration(milliseconds: 1500), ()=> _checkUser(context));
   }
-
-  /*startTimer() {
-    var duration = const Duration(milliseconds: 1500);
-    return Timer(duration, redirect);
-  }
-  redirect() async {
-    Navigator.of(context).pushReplacementNamed(Routes.signIn);
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +53,12 @@ class _SplashViewState extends State<SplashView> {
     const storage = FlutterSecureStorage();
     Map<String, String> allStorage = await storage.readAll();
     print(allStorage);
+    Encrypt sec = Encrypt();
+    sec.init().then((_) {
+      print ( 'email : ' + sec.decryption(allStorage['enc_email']) );
+      print ( 'uid' + sec.decryption(allStorage['enc_uid']) );
+    });
+
     // TODO 추후 주석 해제
     /*if( allStorage['email']!.isNotEmpty && allStorage['uid']!.isNotEmpty) {
       Navigator.of(context).pushReplacementNamed(Routes.myRef);

@@ -91,8 +91,12 @@ class AuthProvider extends ChangeNotifier {
       // TODO 값 암호화 연구
       storage.write(key: 'email', value: user.email);
       storage.write(key: 'uid', value: user.uid);
-      storage.write(key: 'enc_email', value: Encrypt.encryption(user.email));
-      storage.write(key: 'enc_uid', value: Encrypt.encryption(user.uid));
+
+      Encrypt sec = Encrypt();
+      sec.init().then((_) {
+        storage.write(key: 'enc_email', value: sec.encryption(user.email));
+        storage.write(key: 'enc_uid', value: sec.encryption(user.uid));
+      });
       // TODO 신규회원 안내
 
       return user;
@@ -120,6 +124,12 @@ class AuthProvider extends ChangeNotifier {
       // TODO 값 암호화 연구
       storage.write(key: 'email', value: user.email);
       storage.write(key: 'uid', value: user.uid);
+      Encrypt sec = Encrypt();
+      sec.init().then((_) {
+        storage.write(key: 'enc_email', value: sec.encryption(user.email));
+        storage.write(key: 'enc_uid', value: sec.encryption(user.uid));
+      });
+
 
       return true;
     } catch (e) {
