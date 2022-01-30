@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:myref/models/user_model.dart';
-import 'package:flutter/services.dart';
+import 'package:myref/utils/encrypt.dart';
+
 
 enum Status {
   unInitialized,
@@ -90,6 +91,8 @@ class AuthProvider extends ChangeNotifier {
       // TODO 값 암호화 연구
       storage.write(key: 'email', value: user.email);
       storage.write(key: 'uid', value: user.uid);
+      storage.write(key: 'enc_email', value: Encrypt.encryption(user.email));
+      storage.write(key: 'enc_uid', value: Encrypt.encryption(user.uid));
       // TODO 신규회원 안내
 
       return user;

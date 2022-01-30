@@ -6,8 +6,6 @@ import 'package:myref/routes.dart';
 import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/utils/reg_exp_util.dart';
 import 'package:progress_state_button/progress_button.dart';
-import 'package:myref/views/splash/splash_view.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:provider/provider.dart';
 
