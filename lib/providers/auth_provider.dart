@@ -88,14 +88,11 @@ class AuthProvider extends ChangeNotifier {
       UserModel user = _userFromFirebase(result.user);
       // TODO for dev
       storage.deleteAll();
-      // TODO 값 암호화 연구
-      storage.write(key: 'email', value: user.email);
-      storage.write(key: 'uid', value: user.uid);
 
       Encrypt sec = Encrypt();
       sec.init().then((_) {
-        storage.write(key: 'enc_email', value: sec.encryption(user.email));
-        storage.write(key: 'enc_uid', value: sec.encryption(user.uid));
+        storage.write(key: 'email', value: sec.encryption(user.email));
+        storage.write(key: 'uid', value: sec.encryption(user.uid));
       });
       // TODO 신규회원 안내
 
@@ -121,13 +118,10 @@ class AuthProvider extends ChangeNotifier {
       // TODO for dev
       storage.deleteAll();
 
-      // TODO 값 암호화 연구
-      storage.write(key: 'email', value: user.email);
-      storage.write(key: 'uid', value: user.uid);
       Encrypt sec = Encrypt();
       sec.init().then((_) {
-        storage.write(key: 'enc_email', value: sec.encryption(user.email));
-        storage.write(key: 'enc_uid', value: sec.encryption(user.uid));
+        storage.write(key: 'email', value: sec.encryption(user.email));
+        storage.write(key: 'uid', value: sec.encryption(user.uid));
       });
 
 

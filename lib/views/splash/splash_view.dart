@@ -54,10 +54,19 @@ class _SplashViewState extends State<SplashView> {
     Map<String, String> allStorage = await storage.readAll();
     print(allStorage);
     Encrypt sec = Encrypt();
-    sec.init().then((_) {
-      print ( 'email : ' + sec.decryption(allStorage['enc_email']) );
-      print ( 'uid' + sec.decryption(allStorage['enc_uid']) );
-    });
+      sec.init().then((_) {
+        if( allStorage.containsKey('email') && allStorage.containsKey('uid') ){
+          if( allStorage['email']!.isNotEmpty && allStorage['uid']!.isNotEmpty ){
+            print ( 'email : ' + sec.decryption(allStorage['email']) );
+            print ( 'uid : ' + sec.decryption(allStorage['uid']) );
+          }else {
+            print('저장된 사용자 정보 없음 1');
+          }
+        }else {
+          print( '저장된 사용자 정보 없음 2' );
+        }
+      });
+
 
     // TODO 추후 주석 해제
     /*if( allStorage['email']!.isNotEmpty && allStorage['uid']!.isNotEmpty) {
