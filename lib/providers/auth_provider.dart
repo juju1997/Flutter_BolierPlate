@@ -95,7 +95,7 @@ class AuthProvider extends ChangeNotifier {
         storage.write(key: 'uid', value: sec.encryption(user.uid));
       });
       // TODO 신규회원 안내
-
+      notifyListeners();
       return user;
     } catch (e) {
       _status = Status.unAuthenticated;
@@ -124,10 +124,9 @@ class AuthProvider extends ChangeNotifier {
         storage.write(key: 'uid', value: sec.encryption(user.uid));
       });
 
-
+      notifyListeners();
       return true;
     } catch (e) {
-      print("Error on the sign in = " + e.toString());
       _status = Status.unAuthenticated;
       notifyListeners();
       return false;
@@ -136,7 +135,15 @@ class AuthProvider extends ChangeNotifier {
 
   //Method to handle password reset email
   Future<void> sendPasswordResetEmail(String email) async {
-    await _auth.sendPasswordResetEmail(email: email);
+    try {
+      _status = Status.registering;
+      await _auth.sendPasswordResetEmail(email: email);
+      _status = Status.registered;
+    }catch( e ){
+      _status = Status.unAuthenticated;
+      rethrow;
+    }
+    notifyListeners();
   }
 
   //Method to handle user signing out

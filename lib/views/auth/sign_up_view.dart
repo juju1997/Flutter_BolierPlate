@@ -314,9 +314,6 @@ class _SignUpViewState extends State<SignUpView> {
                             await authProvider.registerWithEmailAndPassword(
                                 _emailController.text,
                                 _passwordCheckController.text);
-                            setState(() {
-                              _btnState = ButtonState.success;
-                            });
                             startTimer();
                           }catch (e){
                             _errorEmailMsg = e.toString();

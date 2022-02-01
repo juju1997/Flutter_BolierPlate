@@ -215,7 +215,7 @@ class _SignInViewState extends State<SignInView> {
                 ),
               ),
               const SizedBox(height: 20.0),
-              // 로그인중
+              // 로그인 중
               authProvider.status == Status.authenticating
                 ? ProgressButton(
                     stateWidgets: btnState(context),
@@ -238,7 +238,10 @@ class _SignInViewState extends State<SignInView> {
                     stateWidgets: btnState(context),
                     stateColors: btnColor(context),
                     onPressed: () async {
-                      _isLoginFailedMsg(false);
+                      setState(() {
+                        _hasEmailError = false;
+                        _isLoginFailedMsg(false);
+                      });
                       if( _btnState == ButtonState.idle ){
                         if (_formKey.currentState!.validate()) {
                           bool status =
@@ -264,6 +267,14 @@ class _SignInViewState extends State<SignInView> {
               TextButton(
                 child: Text(AppLocalizations.of(context).translate("signUp")),
                 onPressed: () => Navigator.of(context).pushNamed(Routes.signUp),
+              ),
+              // 2022-02-01 TODO 비밀번호 초기화, UI구상 및 테마 적용
+              const SizedBox(
+                height: 5.0,
+              ),
+              TextButton(
+                child: Text(AppLocalizations.of(context).translate("findPwd")),
+                onPressed: () => Navigator.of(context).pushNamed(Routes.findPwd),
               )
             ],
           ),

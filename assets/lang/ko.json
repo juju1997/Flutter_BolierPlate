@@ -14,6 +14,7 @@
   "signInNoRegistered": "로그인 정보를 다시 확인해주세요",
   "signIn": "로그인",
   "signUp": "회원가입",
+  "findPwd": "아이디 · 비밀번호 찾기",
   "signInLoading": "로그인 중입니다...",
   "sigInInComplete": "환영합니다!",
 
@@ -36,5 +37,17 @@
   "signUpPasswordTry": "비밀번호를 설정해주세요",
   "signUpPasswordNotSame": "비밀번호가 일치하지 않습니다",
   "signUpLoading": "회원가입 중입니다...",
-  "signUpComplete": "환영합니다!"
+  "signUpComplete": "환영합니다!",
+
+  "___find_pwd_view___": "비밀번호 초기화",
+  "findEmailTitle": "이메일 찾기",
+  "findPwdTitle": "아이디 · 비밀번호 찾기",
+  "findPwdEmailLabel": "이메일",
+  "findPwdTextEmail": "이메일을 입력해주세요",
+  "findPwdTextRegExpErrorEmail": "이메일 형식에 맞게 입력해주세요",
+  "findPwdTextErrorEmail": "이메일을 입력해주세요",
+  "user-not-found": "회원 정보가 없습니다",
+  "findPwdSendLink": "비밀번호 초기화 링크 전송",
+  "findPwdLoading": "잠시만 기다려주세요...",
+  "findPwdSuccess": "전송완료!"
 }
