@@ -268,7 +268,6 @@ class _SignInViewState extends State<SignInView> {
                 child: Text(AppLocalizations.of(context).translate("signUp")),
                 onPressed: () => Navigator.of(context).pushNamed(Routes.signUp),
               ),
-              // 2022-02-01 TODO 비밀번호 초기화, UI구상 및 테마 적용
               const SizedBox(
                 height: 5.0,
               ),

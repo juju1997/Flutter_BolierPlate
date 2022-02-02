@@ -17,8 +17,6 @@ class _FindPwdViewState extends State<FindPwdView> {
   late TextEditingController _emailController;
   late String _errorEmailMsg;
 
-  // 메일전송 버튼 활성화 여부
-  late bool _isAbleSend;
   // 이메일 에러텍스트 노출 여부
   late bool _isEmailError;
 
@@ -31,10 +29,8 @@ class _FindPwdViewState extends State<FindPwdView> {
     super.initState();
     _emailController = TextEditingController(text: "");
     _errorEmailMsg = "";
-    _isAbleSend = false;
     _isEmailError = false;
     _btnState = ButtonState.fail;
-    _isAbleSend = false;
   }
 
   void _ableSend(bool isAble){
@@ -174,6 +170,8 @@ class _FindPwdViewState extends State<FindPwdView> {
                         if( _formKey.currentState!.validate() ) {
                           try{
                             await authProvider.sendPasswordResetEmail(_emailController.text);
+
+                            // TODO 비밀번호 초기화 링크 전송 후 처리
                           }catch( e ) {
                             _errorEmailMsg = e.toString();
                             if( _errorEmailMsg.contains("user-not-found") ) {
