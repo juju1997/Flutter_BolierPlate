@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:myref/app_localizations.dart';
 import 'package:myref/providers/auth_provider.dart';
+import 'package:myref/routes.dart';
 import 'package:myref/utils/reg_exp_util.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
@@ -170,7 +173,7 @@ class _FindPwdViewState extends State<FindPwdView> {
                         if( _formKey.currentState!.validate() ) {
                           try{
                             await authProvider.sendPasswordResetEmail(_emailController.text);
-
+                            startTimer();
                             // TODO 비밀번호 초기화 링크 전송 후 처리
                           }catch( e ) {
                             _errorEmailMsg = e.toString();
@@ -194,7 +197,18 @@ class _FindPwdViewState extends State<FindPwdView> {
       )
     );
   }
+
+  // 비밀번호 초기화 링크 전송
+  startTimer() {
+    var duration = const Duration(seconds: 1);
+    return Timer(duration, redirect);
+  }
+  // 비밀번호 초기화 링크 전송 완료
+  redirect() async {
+    Navigator.of(context).pushReplacementNamed(Routes.findPwdSend);
+  }
 }
+
 
 Map<ButtonState, Widget> btnState(BuildContext context) {
   return {

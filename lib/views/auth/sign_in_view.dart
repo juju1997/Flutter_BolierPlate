@@ -266,14 +266,20 @@ class _SignInViewState extends State<SignInView> {
               ),
               TextButton(
                 child: Text(AppLocalizations.of(context).translate("signUp")),
-                onPressed: () => Navigator.of(context).pushNamed(Routes.signUp),
+                onPressed: () {
+                  authProvider.onAuthStateChanged(null);
+                  Navigator.of(context).pushNamed(Routes.signUp);
+                },
               ),
               const SizedBox(
                 height: 5.0,
               ),
               TextButton(
                 child: Text(AppLocalizations.of(context).translate("findPwd")),
-                onPressed: () => Navigator.of(context).pushNamed(Routes.findPwd),
+                onPressed: () {
+                  authProvider.onAuthStateChanged(null);
+                  Navigator.of(context).pushNamed(Routes.findPwd);
+                },
               )
             ],
           ),

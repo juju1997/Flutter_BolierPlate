@@ -41,7 +41,7 @@
 
   "___find_pwd_view___": "비밀번호 초기화",
   "findEmailTitle": "이메일 찾기",
-  "findPwdTitle": "아이디 · 비밀번호 찾기",
+  "findPwdTitle": "비밀번호 찾기",
   "findPwdEmailLabel": "이메일",
   "findPwdTextEmail": "이메일을 입력해주세요",
   "findPwdTextRegExpErrorEmail": "이메일 형식에 맞게 입력해주세요",

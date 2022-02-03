@@ -139,11 +139,13 @@ class AuthProvider extends ChangeNotifier {
       _status = Status.registering;
       await _auth.sendPasswordResetEmail(email: email);
       _status = Status.registered;
+      notifyListeners();
     }catch( e ){
       _status = Status.unAuthenticated;
+      notifyListeners();
       rethrow;
     }
-    notifyListeners();
+
   }
 
   //Method to handle user signing out
