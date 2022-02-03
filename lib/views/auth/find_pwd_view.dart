@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:myref/app_localizations.dart';
+import 'package:myref/models/screen_arguments.dart';
 import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/routes.dart';
 import 'package:myref/utils/reg_exp_util.dart';
@@ -205,7 +207,8 @@ class _FindPwdViewState extends State<FindPwdView> {
   }
   // 비밀번호 초기화 링크 전송 완료
   redirect() async {
-    Navigator.of(context).pushReplacementNamed(Routes.findPwdSend);
+    ScreenArguments args = ScreenArguments('email', _emailController.text);
+    Navigator.of(context).pushReplacementNamed(Routes.findPwdSend, arguments: args);
   }
 }
 

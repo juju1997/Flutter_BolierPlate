@@ -356,7 +356,7 @@ class _SignUpViewState extends State<SignUpView> {
   }
   // 로그인 화면으로 전환
   redirect() async {
-    Navigator.of(context).pushReplacementNamed(Routes.myRef);
+    Navigator.of(context).pushNamedAndRemoveUntil(Routes.myRef, (r) => false);
   }
 
 }

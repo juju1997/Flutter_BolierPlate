@@ -49,5 +49,6 @@
   "user-not-found": "회원 정보가 없습니다",
   "findPwdSendLink": "비밀번호 초기화 링크 전송",
   "findPwdLoading": "잠시만 기다려주세요...",
-  "findPwdSuccess": "전송완료!"
+  "findPwdSuccess": "전송완료!",
+  "findPwdGoToSignIn": "로그인하러가기!"
 }
