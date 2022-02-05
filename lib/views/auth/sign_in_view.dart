@@ -280,6 +280,13 @@ class _SignInViewState extends State<SignInView> {
                   authProvider.onAuthStateChanged(null);
                   Navigator.of(context).pushNamed(Routes.findPwd);
                 },
+              ),
+
+              TextButton(
+                  onPressed: (){
+                    Navigator.of(context).pushNamed(Routes.signInTest);
+                  },
+                  child: const Text('SignIn View Design Test')
               )
             ],
           ),
