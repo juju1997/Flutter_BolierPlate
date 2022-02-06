@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -8,6 +10,7 @@ import 'package:myref/views/components/round_btn.dart';
 import 'package:provider/provider.dart';
 
 import '../../app_localizations.dart';
+import '../../routes.dart';
 
 class SignInTestView extends StatefulWidget {
   const SignInTestView({Key? key}) : super(key: key);
@@ -112,64 +115,139 @@ class _SignInTestViewState extends State<SignInTestView> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    return ModalProgressHUD(
-        opacity: 0.4,
-        progressIndicator: SpinKitThreeInOut(
-          size: 35.0,
-          color: Color(0xFFF9BE7C),
-        ),
-        inAsyncCall: _showSpinner,
-        child: Scaffold(
-          key: _scaffoldKey,
-          resizeToAvoidBottomInset: true,
-          backgroundColor: Color(0xFFFFF9EC),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 10.0),
-                  Center(
-                    child: SizedBox(
-                        width: 175,
-                        height: 175,
-                        child: SizedBox(
+    return Form(
+      key: _formKey,
+      child: ModalProgressHUD(
+          opacity: 0.4,
+          progressIndicator: SpinKitThreeInOut(
+            size: 35.0,
+            color: Color(0xFFF9BE7C),
+          ),
+          inAsyncCall: _showSpinner,
+          child: Scaffold(
+            key: _scaffoldKey,
+            resizeToAvoidBottomInset: true,
+            backgroundColor: Color(0xFFFFF9EC),
+            body: SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 10.0),
+                    Center(
+                      child: SizedBox(
                           width: 175,
                           height: 175,
-                          child: FlutterLogo()
-                        )
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 15, 20, 8),
-                    child: Text('Login',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 20
+                          child: SizedBox(
+                            width: 175,
+                            height: 175,
+                            child: FlutterLogo()
+                          )
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Text('로그인 후에 이용할 수 있어요!.',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 13
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 15, 20, 8),
+                      child: Text('Login',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Text('로그인 후에 이용할 수 있어요!.',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 13
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'E-mail',
+                              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+
+
+
+
+
+
+
+                            TextFormField(
+                              focusNode: _emailFocusNode,
+                              controller: _emailController,
+                              onChanged: (_){
+                                if(_emailController.text.isEmpty){
+                                  _ableLogin('email', false);
+                                }else{
+                                  _ableLogin('email', true);
+                                }
+                              },
+                              validator: (value) {
+                                if(value!.isEmpty){
+                                  return AppLocalizations.of(context).translate("signInTextErrorEmail");
+                                }
+                                else if(! RegExpUtil.isEmail(value)){
+                                  return AppLocalizations.of(context).translate("signInTextRegExpErrorEmail");
+                                }else{
+                                  return null;
+                                }
+                              },
+                              style: (TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400
+                              )),
+                              keyboardType: TextInputType.emailAddress,
+                              cursorColor: Colors.black,
+                              obscureText: false,
+                              decoration: InputDecoration(
+                                errorText: _hasEmailError
+                                    ? AppLocalizations.of(context).translate("signInTextRegExpErrorEmail")
+                                    : _isLoginFailed
+                                    ? AppLocalizations.of(context).translate("signInNoRegistered")
+                                    : null,
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
+                                    borderRadius:BorderRadius.circular(10.0)
+                                ),
+                                border: UnderlineInputBorder(
+                                    borderRadius:BorderRadius.circular(10.0)
+                                ),
+                                fillColor: Color(0xFFFFF9EC),
+                                filled: true,
+                                prefixIcon: FlutterLogo(),
+                              ),
+                            ),
+
+
+
+
+
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            'E-mail',
+                            'Password',
                             style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
                           ),
                           SizedBox(
@@ -180,43 +258,29 @@ class _SignInTestViewState extends State<SignInTestView> {
 
 
 
-
-
                           TextFormField(
-                            focusNode: _emailFocusNode,
-                            controller: _emailController,
+                            focusNode: _pwdFocusNode,
+                            controller: _pwdController,
                             onChanged: (_){
-                              if(_emailController.text.isEmpty){
-                                _ableLogin('email', false);
+                              if(_pwdController.text.isEmpty){
+                                _ableLogin('pwd', false);
                               }else{
-                                _ableLogin('email', true);
-                              }
-                            },
-                            validator: (value) {
-                              if(value!.isEmpty){
-                                return AppLocalizations.of(context).translate("signInTextErrorEmail");
-                              }
-                              else if(! RegExpUtil.isEmail(value)){
-                                return AppLocalizations.of(context).translate("signInTextRegExpErrorEmail");
-                              }else{
-                                return null;
+                                _ableLogin('pwd', true);
                               }
                             },
                             style: (TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.w400
                             )),
-                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) => value!.isEmpty
+                                ? AppLocalizations.of(context)
+                                .translate("signInTextErrorPassword")
+                                : null,
+                            obscureText: true,
                             cursorColor: Colors.black,
-                            obscureText: false,
                             decoration: InputDecoration(
-                              errorText: _hasEmailError
-                                  ? AppLocalizations.of(context).translate("signInTextRegExpErrorEmail")
-                                  : _isLoginFailed
-                                  ? AppLocalizations.of(context).translate("signInNoRegistered")
-                                  : null,
                               focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
+                                  borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
                                   borderRadius:BorderRadius.circular(10.0)
                               ),
                               border: UnderlineInputBorder(
@@ -231,169 +295,125 @@ class _SignInTestViewState extends State<SignInTestView> {
 
 
 
-
                         ],
                       ),
                     ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'Password',
-                          style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+
+
+
+
+                        child:
+                          _isAbleLogin
+                        ?
+                          RoundButton(
+                            btnText: 'LOGIN',
+                            color: Color(0xFFF9BE7C),
+                            onPressed: () async {
+                              setState(() {
+                                _showSpinner = true;
+                                _hasEmailError = false;
+                                _isLoginFailedMsg(false);
+                              });
+
+                              if (_formKey.currentState!.validate()) {
+                                bool status =
+                                await authProvider.signInWithEmailAndPassword(
+                                    _emailController.text,
+                                    _pwdController.text
+                                );
+                                if( !status ){
+                                  _isLoginFailedMsg(true);
+                                  setState(() {
+                                    _hasEmailError = true;
+                                    _showSpinner = false;
+                                  });
+                                }else {
+                                  FocusScope.of(context).unfocus(); // 키보드 내리기
+
+                                  startTimer(status);
+                                }
+                              }
+
+
+                            },
+                          )
+                        :
+                          RoundButton(
+                              color: Color(0xFFFFE4C7).withOpacity(0.9),
+                              btnText: 'LOGIN',
+                              onPressed: (){}
+                          )
+
+
+
+
+
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Center(
+                      /*child: Text('Forgot Password?',
+                        style: TextStyle(
+                            color: Colors.black
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
+                      ),*/
+                      child: TextButton(
+                        onPressed: (){
 
-
-
-
-
-                        TextFormField(
-                          focusNode: _pwdFocusNode,
-                          controller: _pwdController,
-                          onChanged: (_){
-                            if(_pwdController.text.isEmpty){
-                              _ableLogin('pwd', false);
-                            }else{
-                              _ableLogin('pwd', true);
-                            }
-                          },
-                          style: (TextStyle(
+                        },
+                        child: Text('Forgot Password?',
+                            style: TextStyle(
+                              color: Colors.black,
+                            )),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Dont have an account?',
+                          style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w400
                           )),
-                          validator: (value) => value!.isEmpty
-                              ? AppLocalizations.of(context)
-                              .translate("signInTextErrorPassword")
-                              : null,
-                          obscureText: true,
-                          cursorColor: Colors.black,
-                          decoration: InputDecoration(
-                            focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
-                                borderRadius:BorderRadius.circular(10.0)
-                            ),
-                            border: UnderlineInputBorder(
-                                borderRadius:BorderRadius.circular(10.0)
-                            ),
-                            fillColor: Color(0xFFFFF9EC),
-                            filled: true,
-                            prefixIcon: FlutterLogo(),
+                        TextButton(
+                          onPressed: () {
+                            /*Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CreateAccount()));*/
+                          },
+                          child: Text('Sign up',
+                              style: TextStyle(
+                                  color: Colors.black)
                           ),
-                        ),
-
-
-
-
+                        )
                       ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-
-
-
-
-                      child:
-                      _isAbleLogin
-                        ?
-                      RoundButton(
-                      btnText: 'LOGIN',
-                      color: Color(0xFFF9BE7C),
-                      onPressed: () async {
-                        setState(() {
-                          _showSpinner = true;
-                        });
-                        /*
-                          // Add login code
-                          setState(() {
-                            showSpinner = true;
-                          });
-                          try {
-                            final user = await _auth.signInWithEmailAndPassword(
-                                email: email, password: password);
-                            if (user != null) {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SuccessScreen()));
-                            }
-                            setState(() {
-                              showSpinner = false;
-                            });
-                          } catch (e) {
-                            print(e);
-                          }*/
-                        },
-                      )
-                        :
-                      RoundButton(
-                          color: Color(0xFFF9BE7C).withOpacity(0.5),
-                          btnText: 'LOGIN',
-                          onPressed: (){}
-                      )
-
-
-
-
-
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Center(
-                    /*child: Text('Forgot Password?',
-                      style: TextStyle(
-                          color: Colors.black
-                      ),
-                    ),*/
-                    child: TextButton(
-                      onPressed: (){
-
-                      },
-                      child: Text('Forgot Password?',
-                          style: TextStyle(
-                            color: Colors.black,
-                          )),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Dont have an account?',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400
-                        )),
-                      TextButton(
-                        onPressed: () {
-                          /*Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CreateAccount()));*/
-                        },
-                        child: Text('Sign up',
-                            style: TextStyle(
-                                color: Colors.black)
-                        ),
-                      )
-                    ],
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        )
+          )
+      ),
     );
+  }
+
+  // 로그인 시작
+  startTimer(bool res) {
+    var duration = const Duration(seconds: 1);
+    return Timer(duration, redirect);
+  }
+  // 로그인 화면으로 전환
+  redirect() async {
+    //Navigator.of(context).pushNamedAndRemoveUntil(Routes.myRef, (r) => false);
+    print('이동');
   }
 }
