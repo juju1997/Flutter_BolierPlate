@@ -63,6 +63,9 @@ class MyApp2 extends StatelessWidget {
                     //user the first one from the list (in our case, that will be English)
                     return supportedLocales.first;
                   },
+                  themeMode: themeProviderRef.isDarkModeOn
+                      ? ThemeMode.dark
+                      : ThemeMode.light,
                   title: 'MyRef APP',
                   routes: Routes.routes,
                   home: const SplashView(),
