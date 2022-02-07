@@ -7,6 +7,7 @@ import 'package:myref/views/auth/sign_in_view.dart';
 import 'package:myref/views/ref/myref_view.dart';
 import 'package:myref/views/setting/setting_view.dart';
 import 'package:myref/views/test/sign_in_test_view.dart';
+import 'package:myref/views/test/sign_up_test_view.dart';
 
 class Routes {
   Routes._(); // 객체생성 방지
@@ -20,6 +21,7 @@ class Routes {
   static const setting = '/setting';
 
   static const signInTest = '/signInTest';
+  static const signUpTest = '/signUpTest';
 
 
 
@@ -32,6 +34,7 @@ class Routes {
     myRef: (BuildContext context) => const MyRefView(),
     setting: (BuildContext context) => const SettingView(),
 
-    signInTest: (BuildContext context) => const SignInTestView()
+    signInTest: (BuildContext context) => const SignInTestView(),
+    signUpTest: (BuildContext context) => const SignUpTestView(),
   };
 }

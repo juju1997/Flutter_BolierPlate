@@ -1,16 +1,16 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+
 import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/utils/reg_exp_util.dart';
 import 'package:myref/views/components/round_btn.dart';
 import 'package:provider/provider.dart';
 
-import '../../app_localizations.dart';
-import '../../routes.dart';
+import 'package:myref/app_localizations.dart';
+import 'package:myref/routes.dart';
 
 class SignInTestView extends StatefulWidget {
   const SignInTestView({Key? key}) : super(key: key);
@@ -39,8 +39,6 @@ class _SignInTestViewState extends State<SignInTestView> {
 
   @override
   void initState() {
-    super.initState();
-
     _emailController = TextEditingController(text: '');
     _pwdController = TextEditingController(text: '');
 
@@ -71,6 +69,8 @@ class _SignInTestViewState extends State<SignInTestView> {
     _isLoginFailed = false;
 
     _showSpinner = false;
+
+    super.initState();
   }
 
   void _ableLogin(String type, bool isAble){
@@ -86,13 +86,6 @@ class _SignInTestViewState extends State<SignInTestView> {
       }else{
         _isAbleLogin = true;
       }
-
-      // button state control
-      /*if( _isAbleLogin ) {
-        _btnState = ButtonState.idle;
-      }else {
-        _btnState = ButtonState.fail;
-      }*/
     });
   }
 
@@ -229,7 +222,10 @@ class _SignInTestViewState extends State<SignInTestView> {
                                 ),
                                 fillColor: Color(0xFFFFF9EC),
                                 filled: true,
-                                prefixIcon: FlutterLogo(),
+                                prefixIcon: Icon(
+                                  Icons.email,
+                                  color: Color(0xFFF9BE7C),
+                                ),
                               ),
                             ),
 
@@ -288,7 +284,10 @@ class _SignInTestViewState extends State<SignInTestView> {
                               ),
                               fillColor: Color(0xFFFFF9EC),
                               filled: true,
-                              prefixIcon: FlutterLogo(),
+                              prefixIcon: Icon(
+                                Icons.lock,
+                                color: Color(0xFFF9BE7C),
+                              ),
                             ),
                           ),
 
@@ -327,7 +326,6 @@ class _SignInTestViewState extends State<SignInTestView> {
                                 if( !status ){
                                   _isLoginFailedMsg(true);
                                   setState(() {
-                                    _hasEmailError = true;
                                     _showSpinner = false;
                                   });
                                 }else {
@@ -335,6 +333,10 @@ class _SignInTestViewState extends State<SignInTestView> {
 
                                   startTimer(status);
                                 }
+                              }else{
+                                setState(() {
+                                  _showSpinner = false;
+                                });
                               }
 
 
@@ -385,6 +387,8 @@ class _SignInTestViewState extends State<SignInTestView> {
                           )),
                         TextButton(
                           onPressed: () {
+                            authProvider.onAuthStateChanged(null);
+                            Navigator.of(context).pushNamed(Routes.signUpTest);
                             /*Navigator.push(
                                 context,
                                 MaterialPageRoute(
