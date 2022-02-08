@@ -126,7 +126,7 @@ class _SignInTestViewState extends State<SignInTestView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     SizedBox(height: 10.0),
                     Center(
                       child: SizedBox(
@@ -366,7 +366,9 @@ class _SignInTestViewState extends State<SignInTestView> {
                       ),*/
                       child: TextButton(
                         onPressed: (){
-
+                          FocusScope.of(context).unfocus();
+                          authProvider.onAuthStateChanged(null);
+                          Navigator.of(context).pushNamed(Routes.findPwdTest);
                         },
                         child: Text('Forgot Password?',
                             style: TextStyle(
@@ -387,12 +389,9 @@ class _SignInTestViewState extends State<SignInTestView> {
                           )),
                         TextButton(
                           onPressed: () {
+                            FocusScope.of(context).unfocus();
                             authProvider.onAuthStateChanged(null);
                             Navigator.of(context).pushNamed(Routes.signUpTest);
-                            /*Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CreateAccount()));*/
                           },
                           child: Text('Sign up',
                               style: TextStyle(

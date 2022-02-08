@@ -430,6 +430,8 @@ class _SignUpTestViewState extends State<SignUpTestView> {
                       ),),
                     TextButton(
                       onPressed: () {
+                        authProvider.onAuthStateChanged(null);
+                        Navigator.of(context).pop();
                       },
                       child: Text('Sign in',
                           style: TextStyle(

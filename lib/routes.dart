@@ -6,6 +6,8 @@ import 'package:myref/views/auth/sign_up_view.dart';
 import 'package:myref/views/auth/sign_in_view.dart';
 import 'package:myref/views/ref/myref_view.dart';
 import 'package:myref/views/setting/setting_view.dart';
+import 'package:myref/views/test/find_pwd_test_view.dart';
+import 'package:myref/views/test/send_link_test_view.dart';
 import 'package:myref/views/test/sign_in_test_view.dart';
 import 'package:myref/views/test/sign_up_test_view.dart';
 
@@ -22,6 +24,8 @@ class Routes {
 
   static const signInTest = '/signInTest';
   static const signUpTest = '/signUpTest';
+  static const findPwdTest = '/findPwdTest';
+  static const sendLinkTest = '/sendLinkTest';
 
 
 
@@ -36,5 +40,7 @@ class Routes {
 
     signInTest: (BuildContext context) => const SignInTestView(),
     signUpTest: (BuildContext context) => const SignUpTestView(),
+    findPwdTest: (BuildContext context) => const FindPwdTestView(),
+    sendLinkTest: (BuildContext context) => const SendLinkTestView()
   };
 }
