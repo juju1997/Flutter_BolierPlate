@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:myref/app_localizations.dart';
 import 'package:myref/models/screen_arguments.dart';
-import 'package:myref/providers/auth_provider.dart';
+import 'package:myref/views/components/round_btn.dart';
 import 'package:myref/routes.dart';
-import 'package:progress_state_button/progress_button.dart';
-import 'package:provider/provider.dart';
 
 class FindPwdSendView extends StatefulWidget {
   const FindPwdSendView({Key? key}) : super(key: key);
@@ -17,102 +14,108 @@ class _FindPwdSendViewState extends State<FindPwdSendView> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            AppLocalizations.of(context).translate("findPwdTitle"),
-            style: const TextStyle(color: Colors.black),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          actions: <Widget>[
-            IconButton(
-                onPressed: (){
-                  Navigator.of(context).pushNamedAndRemoveUntil(Routes.signIn, (r) => false);
-                },
-                icon: const Icon(
-                    Icons.close,
-                    color: Colors.black,
-                    size: 35.0,
-                )
-            )
-          ],
-        ),
-        extendBodyBehindAppBar: true,
-        body: Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.center,
-              child: _buildForm(context),
-            )
-          ],
-        )
-      ),
-    );
-  }
-
-  Widget _buildForm(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
     final args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
     return Form(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const FlutterLogo(size: 128.0),
-              Text(
-                  args.message +
-                "\n비밀번호 링크 발송 완료"
-              ),
-              const SizedBox(height: 30.0,),
-              ProgressButton(
-                  stateWidgets: btnState(context),
-                  stateColors: btnColor(context),
-                  state: ButtonState.idle,
-                  onPressed: (){
-                    Navigator.of(context).pushNamedAndRemoveUntil(Routes.signIn, (r) => false);
-                  },
-              )
-            ],
-          )
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Color(0xFFFFF9EC),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: MediaQuery.of(context).size.width * 0.40),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+
+                    child: SizedBox(
+                      child: Image.asset('assets/images/link_email.png'),
+                      height: 150.0,
+                      width: 150.0,
+                    ),
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                args.message,
+                                style: TextStyle(
+                                    color: Color(0xFFE39666),
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                              Text(
+                                ' 로',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20
+                                ),
+                              ),
+                            ]
+                        )
+                    )
+                ),
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: Text(
+                        '비밀번호 재설정 링크를 보내드렸어요.',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20
+                        ),
+                      ),
+                    )
+                ),
+                SizedBox(height: 20,),
+                Center(
+                    child: RoundButton(
+                        color: Color(0xFFF9BE7C),
+                        btnText: '로그인하기',
+                        onPressed: (){
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              Routes.signIn,
+                                  (r) => false);
+                        }
+                    )
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      '이메일이 오지 않았나요?',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('다시보내기',
+                          style: TextStyle(
+                              color: Colors.black)
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
-}
-
-
-Map<ButtonState, Widget> btnState(BuildContext context) {
-  return {
-    ButtonState.idle: Text(
-      AppLocalizations.of(context).translate("findPwdGoToSignIn"),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    ),
-    ButtonState.fail: Text(
-      AppLocalizations.of(context).translate(""),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    ),
-    ButtonState.loading: Text(
-      AppLocalizations.of(context).translate(""),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    ),
-    ButtonState.success: Text(
-      AppLocalizations.of(context).translate(""),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    )
-  };
-}
-Map<ButtonState, Color> btnColor(BuildContext context) {
-  return {
-    ButtonState.fail: Colors.grey.shade300,  // 버튼 비활성 상태
-    ButtonState.idle: Colors.blue.shade300,
-    ButtonState.loading: Colors.blue.shade300,
-    ButtonState.success: Colors.green.shade400,
-  };
 }

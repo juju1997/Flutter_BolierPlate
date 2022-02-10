@@ -1,13 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:myref/app_localizations.dart';
-import 'package:myref/routes.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+
 import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/utils/reg_exp_util.dart';
-import 'package:progress_state_button/progress_button.dart';
-
+import 'package:myref/views/components/round_btn.dart';
 import 'package:provider/provider.dart';
+
+import 'package:myref/app_localizations.dart';
+import 'package:myref/routes.dart';
 
 class SignInView extends StatefulWidget {
   const SignInView({Key? key}) : super(key: key);
@@ -18,40 +23,30 @@ class SignInView extends StatefulWidget {
 
 class _SignInViewState extends State<SignInView> {
 
+  late DateTime currentBackPressTime;
+
   late TextEditingController _emailController;
-  late TextEditingController _passwordController;
+  late TextEditingController _pwdController;
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // 이메일 형식 오류
-  bool _hasEmailError = false;
+  late FocusNode _emailFocusNode; // 이메일 포커스노드
+  late FocusNode _pwdFocusNode;   // 비밀번호 포커스노드
 
-  late FocusNode _emailFocusNode;
-  late FocusNode _pwdFocusNode;
+  late bool _hasEmailError; // 이메일 에러표시
+  late bool _isEmptyEmail;  // 공백 이메일
+  late bool _isEmptyPwd;    // 공백 비밀번호
+  late bool _isAbleLogin;   // 로그인버튼 활성화 여부
+  late bool _isLoginFailed; // 로그인 실패 여부
 
-  // 이메일 공백체크
-  late bool _isEmptyEmail;
-  // 비밀번호 공백체크
-  late bool _isEmptyPwd;
-  // 로그인 버튼 활성화 여부
-  late bool _isAbleLogin;
+  late bool _showSpinner;   // 화면 로딩
 
-  // 로그인 실패
-  late bool _isLoginFailed;
-
-  late ButtonState _btnState;
+  late DateTime _backButtonPressedTime;
 
   @override
   void initState() {
-    super.initState();
-
-    _isEmptyEmail = true;
-    _isEmptyPwd = true;
-    _isAbleLogin = false;
-    _isLoginFailed = false;
-    _emailController = TextEditingController(text: "");
-    _passwordController = TextEditingController(text: "");
-    _btnState = ButtonState.fail;
+    _emailController = TextEditingController(text: '');
+    _pwdController = TextEditingController(text: '');
 
     _emailFocusNode = FocusNode();
     _emailFocusNode.addListener(() {
@@ -73,9 +68,19 @@ class _SignInViewState extends State<SignInView> {
       }
     });
 
+    _hasEmailError = false;
+    _isEmptyEmail = true;
+    _isEmptyPwd = true;
+    _isAbleLogin = false;
+    _isLoginFailed = false;
+
+    _showSpinner = false;
+
+    _backButtonPressedTime =  DateTime(1997);
+
+    super.initState();
   }
 
-  // 로그인 가능여부 확인
   void _ableLogin(String type, bool isAble){
     setState(() {
       if(type == 'email'){
@@ -89,252 +94,360 @@ class _SignInViewState extends State<SignInView> {
       }else{
         _isAbleLogin = true;
       }
-
-      if( _isAbleLogin ) {
-        _btnState = ButtonState.idle;
-      }else {
-        _btnState = ButtonState.fail;
-      }
     });
   }
-  // 로그인 실패 메시지 컨트롤
-  void _isLoginFailedMsg(bool status){
+
+  // 로그인 메시징 처리
+  void _isLoginFailedMsg(bool status) {
     setState(() {
       _isLoginFailed = status;
     });
   }
 
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        resizeToAvoidBottomInset : false,
-        key: _scaffoldKey,
-        body: Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.center,
-              child: _buildForm(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
+    _pwdController.dispose();
     _emailFocusNode.dispose();
+    _pwdFocusNode.dispose();
     super.dispose();
   }
 
-  Widget _buildForm(BuildContext context){
+  @override
+  Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-
     return Form(
       key: _formKey,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-              ),
-              TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                focusNode: _emailFocusNode,
-                onChanged: (_){
-                  if(_emailController.text.isEmpty){
-                    _ableLogin('email', false);
-                  }else{
-                    _ableLogin('email', true);
-                  }
-                },
-                controller: _emailController,
-                style: Theme.of(context).textTheme.bodyText1,
-                validator: (value) {
-                  if(value!.isEmpty){
-                    return AppLocalizations.of(context).translate("signInTextErrorEmail");
-                  }
-                  else if(! RegExpUtil.isEmail(value)){
-                    return AppLocalizations.of(context).translate("signInTextRegExpErrorEmail");
-                  }else{
-                    return null;
-                  }
-                },
-                decoration: InputDecoration(
-                  errorText: _hasEmailError
-                            ? AppLocalizations.of(context).translate("signInTextRegExpErrorEmail")
-                            : _isLoginFailed
-                              ? AppLocalizations.of(context).translate("signInNoRegistered")
-                              : null,
-                    prefixIcon: Icon(
-                      Icons.email,
-                      color: Theme.of(context).iconTheme.color,
-                    ),
-                    labelText: AppLocalizations.of(context)
-                        .translate("signInTextEmail"),
-                    border: const OutlineInputBorder()),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: TextFormField(
-                  keyboardType: TextInputType.text,
-                  focusNode: _pwdFocusNode,
-                  onChanged: (_){
-                    if(_passwordController.text.isEmpty){
-                      _ableLogin('pwd', false);
-                    }else{
-                      _ableLogin('pwd', true);
-                    }
-                  },
-                  obscureText: true,
-                  controller: _passwordController,
-                  style: Theme.of(context).textTheme.bodyText1,
-                  validator: (value) => value!.isEmpty
-                      ? AppLocalizations.of(context)
-                      .translate("signInTextErrorPassword")
-                      : null,
-                  decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.lock,
-                        color: Theme.of(context).iconTheme.color,
+      child: ModalProgressHUD(
+          opacity: 0.4,
+          progressIndicator: SpinKitThreeInOut(
+            size: 35.0,
+            color: Color(0xFFF9BE7C),
+          ),
+          inAsyncCall: _showSpinner,
+          child: Scaffold(
+            key: _scaffoldKey,
+            resizeToAvoidBottomInset: true,
+            backgroundColor: Color(0xFFFFF9EC),
+            body: WillPopScope(
+              onWillPop: onWillPop,
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(height: 10.0),
+                      Center(
+                        child: SizedBox(
+                            width: 175,
+                            height: 175,
+                            child: SizedBox(
+                                width: 175,
+                                height: 175,
+                                child: FlutterLogo()
+                            )
+                        ),
                       ),
-                      labelText: AppLocalizations.of(context)
-                          .translate("signInTextPassword"),
-                      border: const OutlineInputBorder()),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 15, 20, 8),
+                        child: Text('Login',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Text('로그인 후에 이용할 수 있어요!.',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 13
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                'E-mail',
+                                style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+
+
+
+
+
+
+
+                              TextFormField(
+                                focusNode: _emailFocusNode,
+                                controller: _emailController,
+                                onChanged: (_){
+                                  if(_emailController.text.isEmpty){
+                                    _ableLogin('email', false);
+                                  }else{
+                                    _ableLogin('email', true);
+                                  }
+                                },
+                                validator: (value) {
+                                  if(value!.isEmpty){
+                                    return AppLocalizations.of(context).translate("signInTextErrorEmail");
+                                  }
+                                  else if(! RegExpUtil.isEmail(value)){
+                                    return AppLocalizations.of(context).translate("signInTextRegExpErrorEmail");
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                                style: (TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w400
+                                )),
+                                keyboardType: TextInputType.emailAddress,
+                                cursorColor: Colors.black,
+                                obscureText: false,
+                                decoration: InputDecoration(
+                                  errorText: _hasEmailError
+                                      ? AppLocalizations.of(context).translate("signInTextRegExpErrorEmail")
+                                      : _isLoginFailed
+                                      ? AppLocalizations.of(context).translate("signInNoRegistered")
+                                      : null,
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
+                                      borderRadius:BorderRadius.circular(10.0)
+                                  ),
+                                  border: UnderlineInputBorder(
+                                      borderRadius:BorderRadius.circular(10.0)
+                                  ),
+                                  fillColor: Color(0xFFFFF9EC),
+                                  filled: true,
+                                  prefixIcon: Icon(
+                                    Icons.email,
+                                    color: Color(0xFFF9BE7C),
+                                  ),
+                                ),
+                              ),
+
+
+
+
+
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Password',
+                              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+
+
+
+
+
+                            TextFormField(
+                              focusNode: _pwdFocusNode,
+                              controller: _pwdController,
+                              onChanged: (_){
+                                if(_pwdController.text.isEmpty){
+                                  _ableLogin('pwd', false);
+                                }else{
+                                  _ableLogin('pwd', true);
+                                }
+                              },
+                              style: (TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400
+                              )),
+                              validator: (value) => value!.isEmpty
+                                  ? AppLocalizations.of(context)
+                                  .translate("signInTextErrorPassword")
+                                  : null,
+                              obscureText: true,
+                              cursorColor: Colors.black,
+                              decoration: InputDecoration(
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
+                                    borderRadius:BorderRadius.circular(10.0)
+                                ),
+                                border: UnderlineInputBorder(
+                                    borderRadius:BorderRadius.circular(10.0)
+                                ),
+                                fillColor: Color(0xFFFFF9EC),
+                                filled: true,
+                                prefixIcon: Icon(
+                                  Icons.lock,
+                                  color: Color(0xFFF9BE7C),
+                                ),
+                              ),
+                            ),
+
+
+
+
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+
+
+
+
+                            child:
+                            _isAbleLogin
+                                ?
+                            RoundButton(
+                              btnText: 'LOGIN',
+                              color: Color(0xFFF9BE7C),
+                              onPressed: () async {
+                                setState(() {
+                                  _showSpinner = true;
+                                  _hasEmailError = false;
+                                  _isLoginFailedMsg(false);
+                                });
+
+                                if (_formKey.currentState!.validate()) {
+                                  bool status =
+                                  await authProvider.signInWithEmailAndPassword(
+                                      _emailController.text,
+                                      _pwdController.text
+                                  );
+                                  if( !status ){
+                                    _isLoginFailedMsg(true);
+                                    setState(() {
+                                      _showSpinner = false;
+                                    });
+                                  }else {
+                                    FocusScope.of(context).unfocus(); // 키보드 내리기
+
+                                    startTimer(status);
+                                  }
+                                }else{
+                                  setState(() {
+                                    _showSpinner = false;
+                                  });
+                                }
+
+
+                              },
+                            )
+                                :
+                            RoundButton(
+                                color: Color(0xFFFFE4C7).withOpacity(0.9),
+                                btnText: 'LOGIN',
+                                onPressed: (){}
+                            )
+
+
+
+
+
+                        ),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Center(
+                        /*child: Text('Forgot Password?',
+                          style: TextStyle(
+                              color: Colors.black
+                          ),
+                        ),*/
+                        child: TextButton(
+                          onPressed: (){
+                            FocusScope.of(context).unfocus();
+                            authProvider.onAuthStateChanged(null);
+                            Navigator.of(context).pushNamed(Routes.findPwd);
+                          },
+                          child: Text('Forgot Password?',
+                              style: TextStyle(
+                                color: Colors.black,
+                              )),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('Dont have an account?',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400
+                              )),
+                          TextButton(
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              authProvider.onAuthStateChanged(null);
+                              Navigator.of(context).pushNamed(Routes.signUp);
+                            },
+                            child: Text('Sign up',
+                                style: TextStyle(
+                                    color: Colors.black)
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 20.0),
-              // 로그인 중
-              authProvider.status == Status.authenticating
-                ? ProgressButton(
-                    stateWidgets: btnState(context),
-                    stateColors: btnColor(context),
-                    onPressed: (){},
-                    state: ButtonState.loading,
-                  )
-                :
-              // 로그인 성공
-              authProvider.status == Status.authenticated
-                ?
-                  ProgressButton(
-                    stateWidgets: btnState(context),
-                    stateColors: btnColor(context),
-                    onPressed: (){},
-                    state: ButtonState.success,
-                  )
-                :
-                  ProgressButton(
-                    stateWidgets: btnState(context),
-                    stateColors: btnColor(context),
-                    onPressed: () async {
-                      setState(() {
-                        _hasEmailError = false;
-                        _isLoginFailedMsg(false);
-                      });
-                      if( _btnState == ButtonState.idle ){
-                        if (_formKey.currentState!.validate()) {
-                          bool status =
-                          await authProvider.signInWithEmailAndPassword(
-                              _emailController.text,
-                              _passwordController.text
-                          );
-                          if( !status ){
-                            _isLoginFailedMsg(true);
-                          }else {
-                            FocusScope.of(context).unfocus(); // 키보드 내리기
-
-                            startTimer(status);
-                          }
-                        }
-                      }
-                    },
-                    state: _btnState,
-                  ),
-              const SizedBox(
-                height: 80.0,
-              ),
-              TextButton(
-                child: Text(AppLocalizations.of(context).translate("signUp")),
-                onPressed: () {
-                  authProvider.onAuthStateChanged(null);
-                  Navigator.of(context).pushNamed(Routes.signUp);
-                },
-              ),
-              const SizedBox(
-                height: 5.0,
-              ),
-              TextButton(
-                child: Text(AppLocalizations.of(context).translate("findPwd")),
-                onPressed: () {
-                  authProvider.onAuthStateChanged(null);
-                  Navigator.of(context).pushNamed(Routes.findPwd);
-                },
-              ),
-
-              TextButton(
-                  onPressed: (){
-                    Navigator.of(context).pushNamed(Routes.signInTest);
-                  },
-                  child: const Text('SignIn View Design Test')
-              )
-            ],
-          ),
-        ),
+            ),
+          )
       ),
     );
   }
+
+  Future<bool> onWillPop() async {
+    DateTime currentTime = DateTime.now();
+    print('1');
+    //Statement 1 Or statement2
+    bool backButton = currentTime.difference(_backButtonPressedTime) > Duration(seconds: 3);
+    if (backButton) {
+      _backButtonPressedTime = currentTime;
+      Fluttertoast.showToast(
+          msg: "뒤로가기 버튼을 한번 더 누르면 종료됩니다.",
+          backgroundColor: Colors.black,
+          textColor: Colors.white);
+      return false;
+    }
+    SystemNavigator.pop();
+    return true;
+  }
+
   // 로그인 시작
   startTimer(bool res) {
     var duration = const Duration(seconds: 1);
-    return Timer(duration, res ? redirect : stayView);
+    return Timer(duration, redirect);
   }
   // 로그인 화면으로 전환
   redirect() async {
-    Navigator.of(context).pushNamedAndRemoveUntil(Routes.myRef, (r) => false);
+    //Navigator.of(context).pushNamedAndRemoveUntil(Routes.myRef, (r) => false);
+    print('이동');
   }
-  // 로그인 취소
-  stayView() {}
-}
 
-
-Map<ButtonState, Widget> btnState(BuildContext context) {
-  return {
-    ButtonState.fail: Text(
-      AppLocalizations.of(context).translate("signIn"),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    ), // 비활성버튼
-    ButtonState.idle: Text(
-      AppLocalizations.of(context).translate("signIn"),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    ),
-    ButtonState.loading: Text(
-      AppLocalizations.of(context).translate("signInLoading"),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    ),
-    ButtonState.success: Text(
-      AppLocalizations.of(context).translate("sigInInComplete"),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    )
-  };
-}
-Map<ButtonState, Color> btnColor(BuildContext context) {
-  return {
-    ButtonState.fail: Colors.grey.shade300,  // 버튼 비활성 상태
-    ButtonState.idle: Colors.blue.shade300,
-    ButtonState.loading: Colors.blue.shade300,
-    ButtonState.success: Colors.green.shade400,
-  };
 }
 
 

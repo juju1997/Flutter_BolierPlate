@@ -1,13 +1,14 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:myref/app_localizations.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:myref/models/screen_arguments.dart';
 import 'package:myref/providers/auth_provider.dart';
-import 'package:myref/routes.dart';
 import 'package:myref/utils/reg_exp_util.dart';
-import 'package:progress_state_button/progress_button.dart';
+import 'package:myref/app_localizations.dart';
+import 'package:myref/views/components/round_btn.dart';
+import 'package:myref/routes.dart';
 import 'package:provider/provider.dart';
 
 class FindPwdView extends StatefulWidget {
@@ -19,76 +20,26 @@ class FindPwdView extends StatefulWidget {
 
 class _FindPwdViewState extends State<FindPwdView> {
 
-  late TextEditingController _emailController;
-  late String _errorEmailMsg;
-
-  // 이메일 에러텍스트 노출 여부
-  late bool _isEmailError;
-
-  late ButtonState _btnState;
-
   final _formKey = GlobalKey<FormState>();
+  late TextEditingController _emailController;
+  late bool _isEmailError; late String _errorEmailMsg;
+  late bool _isAbleSend;
+  late bool _showSpinner;
 
   @override
   void initState() {
-    super.initState();
     _emailController = TextEditingController(text: "");
-    _errorEmailMsg = "";
-    _isEmailError = false;
-    _btnState = ButtonState.fail;
+    _isEmailError = false; _errorEmailMsg = "";
+    _isAbleSend = false;
+    _showSpinner = false;
+
+    super.initState();
   }
 
   void _ableSend(bool isAble){
     setState(() {
-      isAble
-          ?
-          _btnState = ButtonState.idle
-          :
-          _btnState = ButtonState.fail;
+      _isAbleSend = isAble;
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: GestureDetector(
-        onTap: (){
-          FocusScope.of(context).unfocus();
-        },
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            centerTitle: true,
-            // TODO 휴대폰번호로 이메일 찾기
-            title: Text(
-              AppLocalizations.of(context).translate("findPwdTitle"),
-              style: const TextStyle(color: Colors.black),
-            ),
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-            leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(
-                Icons.chevron_left_outlined,
-                color: Colors.black,
-                size: 35.0
-              ),
-            ),
-          ),
-          extendBodyBehindAppBar: true,
-          body: Stack(
-            children: <Widget>[
-              Align(
-                alignment: Alignment.center,
-                child: _buildForm(context)
-              )
-            ],
-          )
-        )
-      )
-    );
   }
 
   @override
@@ -97,87 +48,166 @@ class _FindPwdViewState extends State<FindPwdView> {
     super.dispose();
   }
 
-  Widget _buildForm(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
+
     final authProvider = Provider.of<AuthProvider>(context);
     return Form(
       key: _formKey,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Text(
-                    AppLocalizations.of(context).translate("findPwdEmailLabel"),
-                    textAlign: TextAlign.left,
-                  )
-                ],
-              ),
-              const SizedBox(height: 6.0),
-              TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                controller: _emailController,
-                onChanged: (_) {
-                  if( _emailController.text.isEmpty ){
-                    _ableSend(false);
-                  }else{
-                    _ableSend(true);
-                  }
-                },
-                validator: (value) {
-                  if( value!.isEmpty ) {
-                    return AppLocalizations.of(context).translate("findPwdTextErrorEmail");
-                  }
-                  else if( !RegExpUtil.isEmail(value) ){
-                    return AppLocalizations.of(context).translate("findPwdTextRegExpErrorEmail");
-                  }
-                  else {
-                    return null;
-                  }
-                },
-                decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context).translate("findPwdTextEmail"),
-                    errorText: _isEmailError
-                        ? _errorEmailMsg
-                        : null,
-                    border: const OutlineInputBorder()
+      child: ModalProgressHUD(
+        progressIndicator: SpinKitThreeInOut(
+          size: 35.0,
+          color: Color(0xFFF9BE7C),
+        ),
+        inAsyncCall: _showSpinner,
+        child: Scaffold(
+
+          resizeToAvoidBottomInset: true,
+
+          appBar: AppBar(
+            elevation: 0,
+            leading: _goBackButton(context),
+            backgroundColor: Color(0xFFFFF9EC),
+          ),
+          backgroundColor: Color(0xFFFFF9EC),
+          body: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                  child: Text('Find Password',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 25
+                    ),),
                 ),
-              ),
-              const SizedBox(height: 20.0),
-              // 이메일 전송 중
-              authProvider.status == Status.registering
-                ? ProgressButton(
-                    stateWidgets: btnState(context),
-                    stateColors: btnColor(context),
-                    onPressed: () {},
-                    state: ButtonState.loading,
-                  )
-                :
-              // 이메일 전송 완료
-              authProvider.status == Status.registered
-                ? ProgressButton(
-                    stateWidgets: btnState(context),
-                    stateColors: btnColor(context),
-                    onPressed: () {},
-                    state: ButtonState.success,
-                  )
-                : ProgressButton(
-                    stateWidgets: btnState(context),
-                    stateColors: btnColor(context),
-                    onPressed: () async {
-                      setState(() {
-                        _isEmailError = false;
-                      });
-                      if( _btnState == ButtonState.idle ) {
-                        if( _formKey.currentState!.validate() ) {
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text('We will send you a password reset link to the email you registered with.',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14
+                    ),),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'E-mail',
+                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+
+
+
+
+
+                      TextFormField(
+                        controller: _emailController,
+                        style: (TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400
+                        )),
+                        keyboardType: TextInputType.emailAddress,
+                        cursorColor: Colors.black,
+                        obscureText: false,
+                        onChanged: (_) {
+                          if( _emailController.text.isEmpty ){
+                            _ableSend(false);
+                          }else{
+                            _ableSend(true);
+                          }
+                        },
+                        decoration: InputDecoration(
+                          errorText: _isEmailError
+                              ? _errorEmailMsg
+                              : null,
+                          focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
+                              borderRadius:BorderRadius.circular(10.0)
+                          ),
+                          border: UnderlineInputBorder(
+                              borderRadius:BorderRadius.circular(10.0)
+                          ),
+                          fillColor: Color(0xFFFFF9EC),
+                          filled: true,
+                          prefixIcon: Icon(
+                            Icons.email,
+                            color: Color(0xFFF9BE7C),
+                          ),
+                        ),
+                      ),
+
+
+
+
+                    ],
+                  ),
+                ),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+
+
+
+                    child:
+                    _isAbleSend
+                        ?
+                    RoundButton(
+                      btnText: 'Send Link',
+                      color: Color(0xFFF9BE7C),
+                      onPressed: () async {
+                        setState(() {
+                          _showSpinner = true;
+                          _isEmailError = false;
+                        });
+
+                        if (_formKey.currentState!.validate()) {
+
                           try{
-                            await authProvider.sendPasswordResetEmail(_emailController.text);
-                            startTimer();
-                            // TODO 비밀번호 초기화 링크 전송 후 처리
-                          }catch( e ) {
+                            if( _emailController.text.isEmpty ) {
+                              setState((){
+                                _showSpinner = false;
+                                _isEmailError = true;
+                              });
+                              _errorEmailMsg = AppLocalizations.of(context).translate("findPwdTextErrorEmail");
+                            }
+                            else if( RegExpUtil.isNotEmail(_emailController.text) ){
+                              setState((){
+                                _showSpinner = false;
+                                _isEmailError = true;
+                              });
+                              _errorEmailMsg = AppLocalizations.of(context).translate("findPwdTextRegExpErrorEmail");
+                            }else{
+
+                              FocusScope.of(context).unfocus();
+                              await authProvider.sendPasswordResetEmail(_emailController.text);
+                              startTimer();
+                            }
+                          }catch (e){
                             _errorEmailMsg = e.toString();
                             if( _errorEmailMsg.contains("user-not-found") ) {
                               _errorEmailMsg = AppLocalizations.of(context).translate("user-not-found");
@@ -186,58 +216,73 @@ class _FindPwdViewState extends State<FindPwdView> {
                             }
                             setState(() {
                               _isEmailError = true;
+                              _showSpinner = false;
                             });
                           }
                         }
-                      }
-                    },
-                    state: _btnState,
-                  )
-            ],
+                      },
+                    )
+                        :
+                    RoundButton(
+                        color: Color(0xFFFFE4C7).withOpacity(0.9),
+                        btnText: 'Send Link',
+                        onPressed: (){}
+                    )
+                    ,
+
+
+
+
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Did you remember the password?',
+                      style: TextStyle(
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w400
+                      ),),
+                    TextButton(
+                      onPressed: () {
+                        authProvider.onAuthStateChanged(null);
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Sign in',
+                          style: TextStyle(
+                              color: Colors.black)
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
-        )
-      )
+        ),
+      ),
     );
   }
 
-  // 비밀번호 초기화 링크 전송
+  Widget _goBackButton(BuildContext context) {
+    return IconButton(
+        icon: Icon(Icons.arrow_back, color: Colors.black),
+        onPressed: () {
+          Navigator.of(context).pop(true);
+        });
+  }
+
+  // 비밀번호 찾기 시작
   startTimer() {
     var duration = const Duration(seconds: 1);
     return Timer(duration, redirect);
   }
-  // 비밀번호 초기화 링크 전송 완료
+  // 메일전송 성공화면 전환
   redirect() async {
     ScreenArguments args = ScreenArguments('email', _emailController.text);
-    Navigator.of(context).pushReplacementNamed(Routes.findPwdSend, arguments: args);
+    setState((){
+      _showSpinner = false;
+      _isEmailError = false;
+    });
+    Navigator.of(context).pushNamed(Routes.findPwdSend, arguments: args);
   }
-}
-
-
-Map<ButtonState, Widget> btnState(BuildContext context) {
-  return {
-    ButtonState.fail: Text(
-      AppLocalizations.of(context).translate("findPwdSendLink"),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    ), // 비활성버튼
-    ButtonState.idle: Text(
-      AppLocalizations.of(context).translate("findPwdSendLink"),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    ),
-    ButtonState.loading: Text(
-      AppLocalizations.of(context).translate("findPwdLoading"),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    ),
-    ButtonState.success: Text(
-      AppLocalizations.of(context).translate("findPwdSuccess"),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-    )
-  };
-}
-Map<ButtonState, Color> btnColor(BuildContext context) {
-  return {
-    ButtonState.fail: Colors.grey.shade300,  // 버튼 비활성 상태
-    ButtonState.idle: Colors.blue.shade300,
-    ButtonState.loading: Colors.blue.shade300,
-    ButtonState.success: Colors.green.shade400,
-  };
 }
