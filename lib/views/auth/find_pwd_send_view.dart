@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myref/app_localizations.dart';
+import 'package:myref/constants/app_colors.dart';
 import 'package:myref/models/screen_arguments.dart';
 import 'package:myref/views/components/round_btn.dart';
 import 'package:myref/routes.dart';
@@ -18,7 +20,7 @@ class _FindPwdSendViewState extends State<FindPwdSendView> {
     return Form(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        backgroundColor: Color(0xFFFFF9EC),
+        backgroundColor: AppColors.backGround,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -46,16 +48,16 @@ class _FindPwdSendViewState extends State<FindPwdSendView> {
                             children: <Widget>[
                               Text(
                                 args.message,
-                                style: TextStyle(
-                                    color: Color(0xFFE39666),
+                                style: const TextStyle(
+                                    color: AppColors.emailText,
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold
                                 ),
                               ),
                               Text(
-                                ' 로',
-                                style: TextStyle(
-                                    color: Colors.black,
+                                AppLocalizations.of(context).translate("findPwdTo"),
+                                style: const TextStyle(
+                                    color: AppColors.textBlack,
                                     fontSize: 20
                                 ),
                               ),
@@ -67,19 +69,19 @@ class _FindPwdSendViewState extends State<FindPwdSendView> {
                     padding: const EdgeInsets.all(8.0),
                     child: Center(
                       child: Text(
-                        '비밀번호 재설정 링크를 보내드렸어요.',
-                        style: TextStyle(
-                            color: Colors.black,
+                        AppLocalizations.of(context).translate("findPwdResult"),
+                        style: const TextStyle(
+                            color: AppColors.textBlack,
                             fontSize: 20
                         ),
                       ),
                     )
                 ),
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
                 Center(
                     child: RoundButton(
-                        color: Color(0xFFF9BE7C),
-                        btnText: '로그인하기',
+                        color: AppColors.authBtnActive,
+                        btnText: AppLocalizations.of(context).translate("findPwdToSignIn"),
                         onPressed: (){
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               Routes.signIn,
@@ -87,16 +89,16 @@ class _FindPwdSendViewState extends State<FindPwdSendView> {
                         }
                     )
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      '이메일이 오지 않았나요?',
-                      style: TextStyle(
-                          color: Colors.black,
+                      AppLocalizations.of(context).translate("findPwdFail"),
+                      style: const TextStyle(
+                          color: AppColors.textBlack,
                           fontWeight: FontWeight.w400
                       ),
                     ),
@@ -104,9 +106,10 @@ class _FindPwdSendViewState extends State<FindPwdSendView> {
                       onPressed: (){
                         Navigator.of(context).pop();
                       },
-                      child: Text('다시보내기',
-                          style: TextStyle(
-                              color: Colors.black)
+                      child: Text(AppLocalizations.of(context).translate("reSendPwd"),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textBlack)
                       ),
                     )
                   ],

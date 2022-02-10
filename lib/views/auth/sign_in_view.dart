@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:myref/constants/app_colors.dart';
 
 import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/utils/reg_exp_util.dart';
@@ -120,15 +121,15 @@ class _SignInViewState extends State<SignInView> {
       key: _formKey,
       child: ModalProgressHUD(
           opacity: 0.4,
-          progressIndicator: SpinKitThreeInOut(
+          progressIndicator: const SpinKitThreeInOut(
             size: 35.0,
-            color: Color(0xFFF9BE7C),
+            color: AppColors.spinKit,
           ),
           inAsyncCall: _showSpinner,
           child: Scaffold(
             key: _scaffoldKey,
             resizeToAvoidBottomInset: true,
-            backgroundColor: Color(0xFFFFF9EC),
+            backgroundColor: AppColors.backGround,
             body: WillPopScope(
               onWillPop: onWillPop,
               child: SafeArea(
@@ -137,59 +138,49 @@ class _SignInViewState extends State<SignInView> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 10.0),
-                      Center(
+                      const SizedBox(height: 10.0),
+                      const Center(
                         child: SizedBox(
-                            width: 175,
-                            height: 175,
-                            child: SizedBox(
-                                width: 175,
-                                height: 175,
-                                child: FlutterLogo()
-                            )
+                            width: 130,
+                            height: 130,
+                            child: FlutterLogo()
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(20, 15, 20, 8),
-                        child: Text('Login',
-                          style: TextStyle(
-                              color: Colors.black,
+                        child: Text(AppLocalizations.of(context).translate("signIn"),
+                          style: const TextStyle(
+                              color: AppColors.textBlack,
                               fontWeight: FontWeight.w600,
-                              fontSize: 20
+                              fontSize: 23
                           ),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Text('로그인 후에 이용할 수 있어요!.',
-                          style: TextStyle(
-                              color: Colors.black,
+                        child: Text(AppLocalizations.of(context).translate("signInWelcome"),
+                          style: const TextStyle(
+                              color: AppColors.textBlack,
                               fontWeight: FontWeight.w400,
-                              fontSize: 13
+                              fontSize: 16
                           ),
                         ),
                       ),
+                      SizedBox(height: MediaQuery.of(context).size.width * 0.065),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
+                          margin: const EdgeInsets.symmetric(vertical: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                'E-mail',
-                                style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
+                                AppLocalizations.of(context).translate("signInTextEmail"),
+                                style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: AppColors.textBlack,),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
-
-
-
-
-
-
-
                               TextFormField(
                                 focusNode: _emailFocusNode,
                                 controller: _emailController,
@@ -210,12 +201,12 @@ class _SignInViewState extends State<SignInView> {
                                     return null;
                                   }
                                 },
-                                style: (TextStyle(
-                                    color: Colors.black,
+                                style: const TextStyle(
+                                    color: AppColors.textBlack,
                                     fontWeight: FontWeight.w400
-                                )),
+                                ),
                                 keyboardType: TextInputType.emailAddress,
-                                cursorColor: Colors.black,
+                                cursorColor: AppColors.textBlack,
                                 obscureText: false,
                                 decoration: InputDecoration(
                                   errorText: _hasEmailError
@@ -224,46 +215,36 @@ class _SignInViewState extends State<SignInView> {
                                       ? AppLocalizations.of(context).translate("signInNoRegistered")
                                       : null,
                                   focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
+                                      borderSide: const BorderSide(color: AppColors.authBtnActive, width: 5.0),
                                       borderRadius:BorderRadius.circular(10.0)
                                   ),
                                   border: UnderlineInputBorder(
                                       borderRadius:BorderRadius.circular(10.0)
                                   ),
-                                  fillColor: Color(0xFFFFF9EC),
+                                  fillColor: AppColors.backGround,
                                   filled: true,
-                                  prefixIcon: Icon(
+                                  prefixIcon: const Icon(
                                     Icons.email,
-                                    color: Color(0xFFF9BE7C),
+                                    color: AppColors.authIcon,
                                   ),
                                 ),
                               ),
-
-
-
-
-
                             ],
                           ),
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Password',
-                              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
+                              AppLocalizations.of(context).translate("signInTextPassword"),
+                              style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: AppColors.textBlack,),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
-
-
-
-
-
                             TextFormField(
                               focusNode: _pwdFocusNode,
                               controller: _pwdController,
@@ -274,52 +255,44 @@ class _SignInViewState extends State<SignInView> {
                                   _ableLogin('pwd', true);
                                 }
                               },
-                              style: (TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w400
-                              )),
+                              style: const TextStyle(
+                                  color: AppColors.textBlack,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: '_'
+                              ),
                               validator: (value) => value!.isEmpty
-                                  ? AppLocalizations.of(context)
-                                  .translate("signInTextErrorPassword")
+                                  ? AppLocalizations.of(context).translate("signInTextErrorPassword")
                                   : null,
                               obscureText: true,
-                              cursorColor: Colors.black,
+                              cursorColor: AppColors.textBlack,
                               decoration: InputDecoration(
                                 focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
+                                    borderSide: const BorderSide(color: AppColors.authBtnActive, width: 5.0),
                                     borderRadius:BorderRadius.circular(10.0)
                                 ),
                                 border: UnderlineInputBorder(
                                     borderRadius:BorderRadius.circular(10.0)
                                 ),
-                                fillColor: Color(0xFFFFF9EC),
+                                fillColor: AppColors.backGround,
                                 filled: true,
-                                prefixIcon: Icon(
+                                prefixIcon: const Icon(
                                   Icons.lock,
-                                  color: Color(0xFFF9BE7C),
+                                  color: AppColors.authIcon,
                                 ),
                               ),
                             ),
-
-
-
-
                           ],
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
-
-
-
-
                             child:
                             _isAbleLogin
                                 ?
                             RoundButton(
-                              btnText: 'LOGIN',
-                              color: Color(0xFFF9BE7C),
+                              btnText: AppLocalizations.of(context).translate("signIn"),
+                              color: AppColors.authBtnActive,
                               onPressed: () async {
                                 setState(() {
                                   _showSpinner = true;
@@ -349,52 +322,42 @@ class _SignInViewState extends State<SignInView> {
                                   });
                                 }
 
-
                               },
                             )
                                 :
                             RoundButton(
-                                color: Color(0xFFFFE4C7).withOpacity(0.9),
-                                btnText: 'LOGIN',
+                                color: AppColors.authBtnInActive.withOpacity(0.9),
+                                btnText: AppLocalizations.of(context).translate("signIn"),
                                 onPressed: (){}
                             )
-
-
-
-
-
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
                       Center(
-                        /*child: Text('Forgot Password?',
-                          style: TextStyle(
-                              color: Colors.black
-                          ),
-                        ),*/
                         child: TextButton(
                           onPressed: (){
                             FocusScope.of(context).unfocus();
                             authProvider.onAuthStateChanged(null);
                             Navigator.of(context).pushNamed(Routes.findPwd);
                           },
-                          child: Text('Forgot Password?',
-                              style: TextStyle(
-                                color: Colors.black,
+                          child: Text(AppLocalizations.of(context).translate("findPwd"),
+                              style: const TextStyle(
+                                color: AppColors.textBlack,
+                                fontWeight: FontWeight.bold
                               )),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text('Dont have an account?',
-                              style: TextStyle(
-                                  color: Colors.black,
+                          Text(AppLocalizations.of(context).translate("signUpWelcome"),
+                              style: const TextStyle(
+                                  color: AppColors.textBlack,
                                   fontWeight: FontWeight.w400
                               )),
                           TextButton(
@@ -403,9 +366,11 @@ class _SignInViewState extends State<SignInView> {
                               authProvider.onAuthStateChanged(null);
                               Navigator.of(context).pushNamed(Routes.signUp);
                             },
-                            child: Text('Sign up',
-                                style: TextStyle(
-                                    color: Colors.black)
+                            child: Text(AppLocalizations.of(context).translate("signUp"),
+                                style: const TextStyle(
+                                    color: AppColors.textBlack,
+                                    fontWeight: FontWeight.bold
+                                )
                             ),
                           )
                         ],
@@ -422,13 +387,11 @@ class _SignInViewState extends State<SignInView> {
 
   Future<bool> onWillPop() async {
     DateTime currentTime = DateTime.now();
-    print('1');
-    //Statement 1 Or statement2
-    bool backButton = currentTime.difference(_backButtonPressedTime) > Duration(seconds: 3);
+    bool backButton = currentTime.difference(_backButtonPressedTime) > const Duration(seconds: 3);
     if (backButton) {
       _backButtonPressedTime = currentTime;
       Fluttertoast.showToast(
-          msg: "뒤로가기 버튼을 한번 더 누르면 종료됩니다.",
+          msg: AppLocalizations.of(context).translate("pushBackBtn"),
           backgroundColor: Colors.black,
           textColor: Colors.white);
       return false;

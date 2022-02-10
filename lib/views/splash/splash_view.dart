@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:myref/constants/app_colors.dart';
 import 'package:myref/routes.dart';
 import 'package:myref/app_localizations.dart';
 import 'package:myref/utils/encrypt.dart';
@@ -26,24 +27,28 @@ class _SplashViewState extends State<SplashView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Center(
-              child: Text(
-                AppLocalizations.of(context).translate("splashText"),
-                style: const TextStyle(
-                  fontSize: 20.0,
-                ),
+    return Form(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: AppColors.backGround,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Center(
+                child: Text(
+                  AppLocalizations.of(context).translate("splashText"),
+                  style: const TextStyle(
+                    fontSize: 20.0,
+                  ),
+                )
+              ),
+              const FlutterLogo(
+                size: 128,
               )
-            ),
-            const FlutterLogo(
-              size: 128,
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );

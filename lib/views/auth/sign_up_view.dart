@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:myref/constants/app_colors.dart';
 import 'package:myref/models/user_model.dart';
 import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/utils/reg_exp_util.dart';
@@ -115,9 +116,10 @@ class _SignUpViewState extends State<SignUpView> {
     return Form(
       key: _formKey,
       child: ModalProgressHUD(
-        progressIndicator: SpinKitThreeInOut(
+        opacity: 0.4,
+        progressIndicator: const SpinKitThreeInOut(
           size: 35.0,
-          color: Color(0xFFF9BE7C),
+          color: AppColors.spinKit,
         ),
         inAsyncCall: _showSpinner,
         child: Scaffold(
@@ -127,9 +129,9 @@ class _SignUpViewState extends State<SignUpView> {
           appBar: AppBar(
             elevation: 0,
             leading: _goBackButton(context),
-            backgroundColor: Color(0xFFFFF9EC),
+            backgroundColor: AppColors.backGround,
           ),
-          backgroundColor: Color(0xFFFFF9EC),
+          backgroundColor: AppColors.backGround,
           body: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -137,48 +139,45 @@ class _SignUpViewState extends State<SignUpView> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-                  child: Text('Create Account',
-                    style: TextStyle(
-                        color: Colors.black,
+                  child: Text(AppLocalizations.of(context).translate("signUpAppBarTitle"),
+                    style: const TextStyle(
+                        color: AppColors.textBlack,
                         fontWeight: FontWeight.w600,
                         fontSize: 25
                     ),),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Text('Please fill the input below.',
-                    style: TextStyle(
-                        color: Colors.black,
+                  child: Text(AppLocalizations.of(context).translate("signUpInputRequired"),
+                    style: const TextStyle(
+                        color: AppColors.textBlack,
                         fontWeight: FontWeight.w400,
-                        fontSize: 14
+                        fontSize: 16
                     ),),
                 ),
+                SizedBox(height: MediaQuery.of(context).size.width * 0.065),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        'E-mail',
-                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
+                        AppLocalizations.of(context).translate("signUpEmailLabel"),
+                        style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: AppColors.textBlack),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-
-
-
-
 
                       TextFormField(
                         focusNode: _emailFocusNode,
                         controller: _emailController,
-                        style: (TextStyle(
-                            color: Colors.black,
+                        style: const TextStyle(
+                            color: AppColors.textBlack,
                             fontWeight: FontWeight.w400
-                        )),
+                        ),
                         keyboardType: TextInputType.emailAddress,
-                        cursorColor: Colors.black,
+                        cursorColor: AppColors.textBlack,
                         obscureText: false,
                         decoration: InputDecoration(
                           errorText: _isEmailError
@@ -187,37 +186,33 @@ class _SignUpViewState extends State<SignUpView> {
                               ? _errorEmailMsg
                               : null,
                           focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
+                              borderSide: const BorderSide(color: AppColors.authBtnActive, width: 5.0),
                               borderRadius:BorderRadius.circular(10.0)
                           ),
                           border: UnderlineInputBorder(
                               borderRadius:BorderRadius.circular(10.0)
                           ),
-                          fillColor: Color(0xFFFFF9EC),
+                          fillColor: AppColors.backGround,
                           filled: true,
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.email,
-                            color: Color(0xFFF9BE7C),
+                            color: AppColors.authIcon,
                           ),
                         ),
                       ),
-
-
-
-
                     ],
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        'Password',
-                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
+                        AppLocalizations.of(context).translate("signUpPasswordLabel"),
+                        style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: AppColors.textBlack),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       TextFormField(
@@ -258,112 +253,94 @@ class _SignUpViewState extends State<SignUpView> {
                           });
                         },
                         obscureText: true,
-                        cursorColor: Colors.black,
-                        style: (TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400
+                        cursorColor: AppColors.textBlack,
+                        style: (const TextStyle(
+                            color: AppColors.textBlack,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: '_'
                         )),
                         decoration: InputDecoration(
                           errorText: _isPwdError ? _errorPwdMsg : null,
                           focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
+                              borderSide: const BorderSide(color: AppColors.authBtnActive, width: 5.0),
                               borderRadius:BorderRadius.circular(10.0)
                           ),
                           border: UnderlineInputBorder(
                               borderRadius:BorderRadius.circular(10.0)
                           ),
-                          fillColor: Color(0xFFFFF9EC),
+                          fillColor: AppColors.backGround,
                           filled: true,
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.lock,
-                            color: Color(0xFFF9BE7C),
+                            color: AppColors.authIcon,
                           ),
                         ),
                       ),
-
-
-
-
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       AnimatedOpacity(
                         opacity: _isPwdChkVisible ? 1.0 : 0.0,
-                        duration: Duration(milliseconds: 200),
-                        child: Container(
-                          child: TextFormField(
+                        duration: const Duration(milliseconds: 200),
+                        child: TextFormField(
 
-                            controller: _pwdChkController,
-                            onChanged: (_) {
-                              setState(() {
-                                if( _pwdChkController.text.isNotEmpty ) {
-                                  if( _pwdChkController.text != _pwdController.text ) {
-                                    _isPwdChkError = true;
-                                    _errorPwdChkMsg = AppLocalizations.of(context).translate("signUpPasswordNotSame");
-                                  }else {
-                                    _isPwdChkError = false;
-                                    _errorPwdChkMsg = "";
-                                  }
-                                }else{
+                          controller: _pwdChkController,
+                          onChanged: (_) {
+                            setState(() {
+                              if( _pwdChkController.text.isNotEmpty ) {
+                                if( _pwdChkController.text != _pwdController.text ) {
+                                  _isPwdChkError = true;
+                                  _errorPwdChkMsg = AppLocalizations.of(context).translate("signUpPasswordNotSame");
+                                }else {
                                   _isPwdChkError = false;
                                   _errorPwdChkMsg = "";
                                 }
-                                funcIsAbleSignUp();
-                              });
+                              }else{
+                                _isPwdChkError = false;
+                                _errorPwdChkMsg = "";
+                              }
+                              funcIsAbleSignUp();
+                            });
 
-                            },
-                            obscureText: true,
-                            cursorColor: Colors.black,
-                            style: (TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400
-                            )),
-                            decoration: InputDecoration(
-                              errorText: _isPwdChkError ? _errorPwdChkMsg : null,
-                              hintText: AppLocalizations.of(context).translate("signUpTextPasswordCheck"),
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
-                                  borderRadius:BorderRadius.circular(10.0)
-                              ),
-                              border: UnderlineInputBorder(
-                                  borderRadius:BorderRadius.circular(10.0)
-                              ),
-                              fillColor: Color(0xFFFFF9EC),
-                              filled: true,
-                              prefixIcon: Icon(
-                                Icons.lock,
-                                color: Color(0xFFF9BE7C),
-                              ),
+                          },
+                          obscureText: true,
+                          cursorColor: AppColors.textBlack,
+                          style: const TextStyle(
+                              color: AppColors.textBlack,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: '_'
+                          ),
+                          decoration: InputDecoration(
+                            errorText: _isPwdChkError ? _errorPwdChkMsg : null,
+                            hintText: AppLocalizations.of(context).translate("signUpTextPasswordCheck"),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: const BorderSide(color: AppColors.authBtnActive, width: 5.0),
+                                borderRadius:BorderRadius.circular(10.0)
+                            ),
+                            border: UnderlineInputBorder(
+                                borderRadius:BorderRadius.circular(10.0)
+                            ),
+                            fillColor: AppColors.backGround,
+                            filled: true,
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                              color: AppColors.authIcon,
                             ),
                           ),
                         ),
                       )
-
-
-
-
                     ],
                   ),
                 ),
-
-
-
-
-
-
-
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
-
-
-
                     child:
                     _isAbleSignUp
                         ?
                     RoundButton(
-                      btnText: 'SIGN UP',
-                      color: Color(0xFFF9BE7C),
+                      btnText: AppLocalizations.of(context).translate("signUpReady"),
+                      color: AppColors.authBtnActive,
                       onPressed: () async {
                         setState(() {
                           _showSpinner = true;
@@ -406,26 +383,18 @@ class _SignUpViewState extends State<SignUpView> {
                     )
                         :
                     RoundButton(
-                        color: Color(0xFFFFE4C7).withOpacity(0.9),
-                        btnText: 'SIGN UP',
+                        color: AppColors.authBtnInActive.withOpacity(0.9),
+                        btnText: AppLocalizations.of(context).translate("signUpReady"),
                         onPressed: (){}
-                    )
-                    ,
-
-
-
-
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 100,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Already have an account?',
-                      style: TextStyle(
-                          color: Colors.grey[600],
+                    Text(AppLocalizations.of(context).translate("signUpAlreadySignUp"),
+                      style: const TextStyle(
+                          color: AppColors.textBlack,
                           fontWeight: FontWeight.w400
                       ),),
                     TextButton(
@@ -433,9 +402,11 @@ class _SignUpViewState extends State<SignUpView> {
                         authProvider.onAuthStateChanged(null);
                         Navigator.of(context).pop();
                       },
-                      child: Text('Sign in',
-                          style: TextStyle(
-                              color: Colors.black)
+                      child: Text(AppLocalizations.of(context).translate("signUpToSignIn"),
+                          style: const TextStyle(
+                              color: AppColors.textBlack,
+                              fontWeight: FontWeight.bold
+                          )
                       ),
                     )
                   ],
@@ -450,7 +421,7 @@ class _SignUpViewState extends State<SignUpView> {
 
   Widget _goBackButton(BuildContext context) {
     return IconButton(
-        icon: Icon(Icons.arrow_back, color: Colors.black),
+        icon: const Icon(Icons.arrow_back, color: AppColors.textBlack),
         onPressed: () {
           Navigator.of(context).pop(true);
         });

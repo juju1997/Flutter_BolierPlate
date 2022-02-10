@@ -82,6 +82,19 @@ flutter:
     ## 이미지
     - assets/images/
 
+  fonts:
+    - family: NanumSquareLight
+      fonts:
+        - asset: assets/fonts/NanumSquare-light.ttf
+
+    - family : NanumSquareRegular
+      fonts:
+        - asset: assets/fonts/NanumSquare-regular.ttf
+
+    - family: NanumSquareBold
+      fonts:
+        - asset: assets/fonts/NanumSquare-bold.ttf
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

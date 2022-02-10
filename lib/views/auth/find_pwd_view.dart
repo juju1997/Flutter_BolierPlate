@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:myref/constants/app_colors.dart';
 import 'package:myref/models/screen_arguments.dart';
 import 'package:myref/providers/auth_provider.dart';
 import 'package:myref/utils/reg_exp_util.dart';
@@ -55,9 +56,10 @@ class _FindPwdViewState extends State<FindPwdView> {
     return Form(
       key: _formKey,
       child: ModalProgressHUD(
-        progressIndicator: SpinKitThreeInOut(
+        opacity: 0.4,
+        progressIndicator: const SpinKitThreeInOut(
           size: 35.0,
-          color: Color(0xFFF9BE7C),
+          color: AppColors.spinKit,
         ),
         inAsyncCall: _showSpinner,
         child: Scaffold(
@@ -67,9 +69,9 @@ class _FindPwdViewState extends State<FindPwdView> {
           appBar: AppBar(
             elevation: 0,
             leading: _goBackButton(context),
-            backgroundColor: Color(0xFFFFF9EC),
+            backgroundColor: AppColors.backGround,
           ),
-          backgroundColor: Color(0xFFFFF9EC),
+          backgroundColor: AppColors.backGround,
           body: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -77,47 +79,44 @@ class _FindPwdViewState extends State<FindPwdView> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-                  child: Text('Find Password',
-                    style: TextStyle(
-                        color: Colors.black,
+                  child: Text(AppLocalizations.of(context).translate("findPwdTitle"),
+                    style: const TextStyle(
+                        color: AppColors.textBlack,
                         fontWeight: FontWeight.w600,
                         fontSize: 25
                     ),),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Text('We will send you a password reset link to the email you registered with.',
-                    style: TextStyle(
-                        color: Colors.black,
+                  child: Text(AppLocalizations.of(context).translate("findPwdSendLink"),
+                    style: const TextStyle(
+                        color: AppColors.textBlack,
                         fontWeight: FontWeight.w400,
-                        fontSize: 14
+                        fontSize: 16
                     ),),
                 ),
+                SizedBox(height: MediaQuery.of(context).size.width * 0.065),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        'E-mail',
-                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: Colors.black),
+                        AppLocalizations.of(context).translate("findPwdEmailLabel"),
+                        style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 13, color: AppColors.textBlack),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
 
-
-
-
-
                       TextFormField(
                         controller: _emailController,
-                        style: (TextStyle(
-                            color: Colors.black,
+                        style: const TextStyle(
+                            color: AppColors.textBlack,
                             fontWeight: FontWeight.w400
-                        )),
+                        ),
                         keyboardType: TextInputType.emailAddress,
-                        cursorColor: Colors.black,
+                        cursorColor: AppColors.textBlack,
                         obscureText: false,
                         onChanged: (_) {
                           if( _emailController.text.isEmpty ){
@@ -131,54 +130,33 @@ class _FindPwdViewState extends State<FindPwdView> {
                               ? _errorEmailMsg
                               : null,
                           focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFFF9BE7C), width: 5.0),
+                              borderSide: const BorderSide(color: AppColors.authBtnActive, width: 5.0),
                               borderRadius:BorderRadius.circular(10.0)
                           ),
                           border: UnderlineInputBorder(
                               borderRadius:BorderRadius.circular(10.0)
                           ),
-                          fillColor: Color(0xFFFFF9EC),
+                          fillColor: AppColors.backGround,
                           filled: true,
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.email,
-                            color: Color(0xFFF9BE7C),
+                            color: AppColors.authIcon,
                           ),
                         ),
                       ),
-
-
-
-
                     ],
                   ),
                 ),
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
-
-
-
                     child:
                     _isAbleSend
                         ?
                     RoundButton(
-                      btnText: 'Send Link',
-                      color: Color(0xFFF9BE7C),
+                      btnText: AppLocalizations.of(context).translate("sendPwdEmailBtn"),
+                      color: AppColors.authBtnActive,
                       onPressed: () async {
                         setState(() {
                           _showSpinner = true;
@@ -224,23 +202,18 @@ class _FindPwdViewState extends State<FindPwdView> {
                     )
                         :
                     RoundButton(
-                        color: Color(0xFFFFE4C7).withOpacity(0.9),
-                        btnText: 'Send Link',
+                        color: AppColors.authBtnInActive.withOpacity(0.9),
+                        btnText: AppLocalizations.of(context).translate("sendPwdEmailBtn"),
                         onPressed: (){}
-                    )
-                    ,
-
-
-
-
+                    ),
                   ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Did you remember the password?',
-                      style: TextStyle(
-                          color: Colors.grey[600],
+                    Text(AppLocalizations.of(context).translate("findPwdRememberPwd"),
+                      style: const TextStyle(
+                          color: AppColors.textBlack,
                           fontWeight: FontWeight.w400
                       ),),
                     TextButton(
@@ -248,9 +221,10 @@ class _FindPwdViewState extends State<FindPwdView> {
                         authProvider.onAuthStateChanged(null);
                         Navigator.of(context).pop();
                       },
-                      child: Text('Sign in',
-                          style: TextStyle(
-                              color: Colors.black)
+                      child: Text(AppLocalizations.of(context).translate("signIn"),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textBlack)
                       ),
                     )
                   ],
@@ -265,7 +239,7 @@ class _FindPwdViewState extends State<FindPwdView> {
 
   Widget _goBackButton(BuildContext context) {
     return IconButton(
-        icon: Icon(Icons.arrow_back, color: Colors.black),
+        icon: const Icon(Icons.arrow_back, color: AppColors.textBlack),
         onPressed: () {
           Navigator.of(context).pop(true);
         });
