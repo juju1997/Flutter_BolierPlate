@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:myref/providers/lang_provider.dart';
 import 'package:myref/providers/auth_provider.dart';
+import 'package:myref/providers/network_provider.dart';
 import 'package:myref/services/firestore_database.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 
 import 'package:myref/my_app.dart';
 
@@ -25,6 +27,13 @@ void main() async{
           ),
           ChangeNotifierProvider<AuthProvider>(
               create: (context) => AuthProvider()
+          ),
+          ChangeNotifierProvider<NetworkProvider>(
+              create: (context) {
+                NetworkProvider networkProvider = NetworkProvider();
+                networkProvider.initialLoad();
+                return networkProvider;
+              },
           )
         ],
         child: MyApp(

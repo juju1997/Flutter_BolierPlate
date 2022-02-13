@@ -21,8 +21,12 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
+
+
+
     Future.delayed(
-        const Duration(milliseconds: 1500), ()=> _checkUser(context));
+        const Duration(milliseconds: 1500), ()=> _checkUser(context)
+    );
   }
 
   @override

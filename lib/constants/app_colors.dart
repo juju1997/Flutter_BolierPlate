@@ -14,7 +14,7 @@ class AppColors {
 
   // auth
   static const Color authBtnActive = Color(0xFFFF9200); //0xFFF9BE7C
-  static const Color authBtnInActive = Color(0xFFFFE4C7);
+  static const Color authBtnInActive = Color(0xFFFFC189);
   static const Color authIcon = Color(0xFFFF9200); //0xFFF9BE7C
   static const Color emailText = Color(0xFFFF9200);
 
