@@ -53,10 +53,9 @@ class MyApp extends StatelessWidget {
                     localeResolutionCallback: (locale, supportedLocales) {
                       //check if the current device locale is supported or not
                       for (var supportedLocale in supportedLocales) {
-                        if (supportedLocale.languageCode ==
-                            locale?.languageCode ||
-                            supportedLocale.countryCode ==
-                                locale?.countryCode) {
+                        if (supportedLocale.languageCode == locale?.languageCode
+                            ||
+                            supportedLocale.countryCode == locale?.countryCode) {
                           return supportedLocale;
                         }
                       }
