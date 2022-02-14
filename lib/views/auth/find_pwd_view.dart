@@ -76,7 +76,7 @@ class _FindPwdViewState extends State<FindPwdView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
                   child: Text(AppLocalizations.of(context).translate("findPwdTitle"),

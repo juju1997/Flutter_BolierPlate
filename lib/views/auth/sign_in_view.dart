@@ -407,8 +407,7 @@ class _SignInViewState extends State<SignInView> {
   }
   // 로그인 화면으로 전환
   redirect() async {
-    //Navigator.of(context).pushNamedAndRemoveUntil(Routes.myRef, (r) => false);
-    print('이동');
+    Navigator.of(context).pushNamedAndRemoveUntil(Routes.myRef, (r) => false);
   }
 
 }
