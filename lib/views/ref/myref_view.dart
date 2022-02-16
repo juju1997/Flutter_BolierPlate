@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:myref/constants/app_colors.dart';
+import 'package:myref/services/firestore_database.dart';
+import 'package:provider/provider.dart';
 
 class MyRefView extends StatefulWidget {
   const MyRefView({Key? key}) : super(key: key);
@@ -22,6 +25,7 @@ class _MyRefViewState extends State<MyRefView> {
 
   @override
   Widget build(BuildContext context) {
+    final firestoreDatabase = Provider.of<FirestoreDatabase>(context, listen: false);
     return Form(
       child: ModalProgressHUD(
         opacity: 0.4,
@@ -41,8 +45,19 @@ class _MyRefViewState extends State<MyRefView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const <Widget>[
-                Text('dd')
+              children: <Widget>[
+                const Text('dd'),
+                TextButton(
+                    onPressed: (){
+                      try{
+                        firestoreDatabase.setUserDoc('test_uid');
+                      }catch(e){
+                        print(e);
+                      }
+
+                    },
+                    child: const Text('document insert test')
+                )
               ],
             ),
           ),
