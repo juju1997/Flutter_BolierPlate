@@ -6,6 +6,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:myref/constants/app_colors.dart';
 import 'package:myref/models/user_model.dart';
 import 'package:myref/providers/auth_provider.dart';
+import 'package:myref/services/firestore_database.dart';
 import 'package:myref/utils/reg_exp_util.dart';
 import 'package:myref/app_localizations.dart';
 import 'package:myref/views/components/round_btn.dart';
@@ -111,7 +112,7 @@ class _SignUpViewState extends State<SignUpView> {
 
   @override
   Widget build(BuildContext context) {
-
+    final firestoreDatabase = Provider.of<FirestoreDatabase>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context);
     return Form(
       key: _formKey,
@@ -354,6 +355,10 @@ class _SignUpViewState extends State<SignUpView> {
                             await authProvider.registerWithEmailAndPassword(
                                 _emailController.text,
                                 _pwdController.text);
+
+                            // setting user document
+                            firestoreDatabase.setUserDoc(userModel.uid);
+                            // go main
                             startTimer();
                           }catch (e){
                             _errorEmailMsg = e.toString();

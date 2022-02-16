@@ -11,9 +11,12 @@ class FirestoreDatabase {
   final _firestoreService = FirestoreService.instance;
 
   // Insert User Document
-  Future<bool> setUserDoc(String uid) async => await _firestoreService.set(
+  Future<void> setUserDoc(String uid) async => await _firestoreService.set(
       path: FirestorePath.user(uid),
-      data: {'uid' : uid}
+      data: {
+        'uid' : uid,
+        'r_date': documentIdFromCurrentDate()
+      }
   );
 
 }

@@ -50,7 +50,7 @@ class _MyRefViewState extends State<MyRefView> {
                 TextButton(
                     onPressed: (){
                       try{
-                        firestoreDatabase.setUserDoc('test_uid');
+                        firestoreDatabase.setUserDoc('test_uid2');
                       }catch(e){
                         print(e);
                       }
